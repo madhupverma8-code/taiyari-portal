@@ -7,330 +7,273 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* CSS में user-select: none; चालू है, लेकिन प्रैक्टिस टेस्ट में हम इसे JS से हटा देंगे */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; user-select: none; }
         body { background-color: #f4f7f6; color: #333; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
-        /* --- 1. HEADER --- */
+        /* --- INSTRUCTIONS MODAL --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 9999;
+        }
+        .instruction-box {
+            background: white; width: 90%; max-width: 600px; border-radius: 10px; overflow: hidden;
+            display: flex; flex-direction: column; max-height: 90vh;
+        }
+        .inst-header { background: #1e3a8a; color: white; padding: 15px 20px; font-size: 18px; font-weight: 600; }
+        .inst-body { padding: 20px; overflow-y: auto; font-size: 14px; line-height: 1.6; }
+        .inst-body ul { padding-left: 20px; margin-top: 10px; }
+        .inst-body li { margin-bottom: 8px; }
+        .inst-footer { padding: 15px 20px; border-top: 1px solid #e2e8f0; background: #f8fafc; text-align: right; }
+        .btn-start { background: #10b981; color: white; border: none; padding: 10px 25px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 15px; }
+
+        /* --- MAIN TEST UI --- */
+        .test-ui { display: flex; flex-direction: column; height: 100vh; width: 100vw; display: none; }
+
         .test-header {
             background: #0f172a; color: white; padding: 10px 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 10;
+            display: flex; justify-content: space-between; align-items: center; z-index: 10;
         }
-        .exam-name { font-size: 18px; font-weight: 600; color: #60a5fa; display: flex; align-items: center; gap: 10px; }
+        .exam-name { font-size: 18px; font-weight: 600; color: #60a5fa; display: flex; align-items: center; gap: 15px;}
+        
+        .header-controls { display: flex; gap: 15px; align-items: center; }
+        .lang-btn { background: #1e293b; color: white; border: 1px solid #334155; padding: 5px 15px; border-radius: 5px; cursor: pointer; font-size: 12px; }
+        .fullscreen-btn { background: transparent; color: #cbd5e1; border: none; cursor: pointer; font-size: 18px; }
+        
         .timer-box {
             background: #1e293b; padding: 8px 20px; border-radius: 8px;
             font-size: 20px; font-weight: 700; color: #fbbf24;
             display: flex; align-items: center; gap: 10px; border: 1px solid #334155;
         }
-        
-        /* Section Timer Box (Top) */
-        .section-timer-box {
-            display: none; 
-            background: #1e3a8a; color: white; padding: 10px;
-            text-align: center; font-size: 16px; font-weight: 600;
-            border-bottom: 2px solid #3b82f6;
-        }
 
-        /* --- 2. MAIN BODY --- */
         .test-body { display: flex; flex: 1; overflow: hidden; }
-
-        /* LEFT: Question Area */
-        .question-area { flex: 1; display: flex; flex-direction: column; background: white; margin: 15px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         
+        /* Question Area */
+        .question-area { flex: 1; display: flex; flex-direction: column; background: white; margin: 15px; border-radius: 10px; border: 1px solid #e2e8f0; }
         .q-top-bar { display: flex; justify-content: space-between; padding: 15px 20px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; border-radius: 10px 10px 0 0; }
-        .q-number { font-weight: 600; color: #1e3a8a; font-size: 16px; }
-        .q-marks { font-size: 13px; color: #166534; background: #dcfce7; padding: 4px 10px; border-radius: 5px; font-weight: 600; }
-        .q-marks .neg { color: #991b1b; background: #fee2e2; margin-left: 5px; }
-
-        .q-content { flex: 1; padding: 25px; overflow-y: auto; font-size: 16px; line-height: 1.6; color: #1f2937; }
-        
-        /* Question-wise Timer */
-        .q-timer { display: none; color: #ef4444; font-weight: 700; font-size: 14px; margin-bottom: 10px; }
-        .q-timer i { margin-right: 5px; }
-
-        /* Options */
-        .options-list { margin-top: 15px; display: flex; flex-direction: column; gap: 12px; }
-        .option-item {
-            display: flex; align-items: center; padding: 12px 15px;
-            border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;
-            transition: 0.2s; background: #fff;
-        }
-        .option-item:hover { border-color: #93c5fd; background: #eff6ff; }
+        .q-content { flex: 1; padding: 25px; overflow-y: auto; font-size: 16px; }
+        .options-list { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+        .option-item { display: flex; align-items: center; padding: 12px 15px; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer; }
         .option-item.selected { border-color: #2563eb; background: #eff6ff; }
-        .option-item input[type="radio"] { margin-right: 15px; transform: scale(1.3); cursor: pointer; }
+        .option-item input { margin-right: 15px; transform: scale(1.2); }
         
-        .q-bottom-bar { padding: 15px 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; background: #f8fafc; border-radius: 0 0 10px 10px; }
-        
-        .btn { padding: 10px 20px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 14px; display: flex; align-items: center; gap: 8px; }
-        .btn-outline { background: white; border: 1px solid #cbd5e1; color: #475569; }
-        .btn-outline:hover { background: #f1f5f9; }
+        .q-bottom-bar { padding: 15px 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; background: #f8fafc; }
+        .btn { padding: 10px 20px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; }
         .btn-primary { background: #2563eb; color: white; }
-        .btn-primary:hover { background: #1d4ed8; }
         .btn-mark { background: #f59e0b; color: white; }
-        .btn-mark:hover { background: #d97706; }
-
-        /* RIGHT: Palette */
-        .palette-area { width: 300px; background: white; margin: 15px 15px 15px 0; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
-        .palette-header { padding: 15px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; }
-        .palette-avatar { width: 40px; height: 40px; border-radius: 50%; background: #3b82f6; color: white; display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 18px; }
-        .palette-info h4 { font-size: 14px; color: #0f172a; }
-        .palette-info span { font-size: 12px; color: #64748b; }
-
-        .palette-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; font-size: 11px; border-bottom: 1px solid #e2e8f0; }
-        .legend-item { display: flex; align-items: center; gap: 5px; color: #475569; }
-        .box { width: 15px; height: 15px; border-radius: 3px; border: 1px solid #cbd5e1; }
-        .box.answered { background: #10b981; border-color: #10b981; }
-        .box.not-answered { background: #ef4444; border-color: #ef4444; }
-        .box.marked { background: #8b5cf6; border-color: #8b5cf6; border-radius: 50%; }
-        .box.not-visited { background: #f1f5f9; }
-
-        .palette-grid { flex: 1; padding: 15px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; overflow-y: auto; }
-        .pallet-btn {
-            width: 40px; height: 40px; border: 1px solid #cbd5e1; border-radius: 6px;
-            background: white; color: #475569; font-weight: 600; cursor: pointer; transition: 0.2s;
-        }
-        .pallet-btn.active { border: 2px solid #2563eb; color: #2563eb; background: #eff6ff; }
+        
+        /* Palette Area */
+        .palette-area { width: 300px; background: white; margin: 15px 15px 15px 0; border-radius: 10px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; }
+        .palette-header { padding: 15px; border-bottom: 1px solid #e2e8f0; display: flex; gap: 10px; align-items: center; }
+        .palette-grid { flex: 1; padding: 15px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; overflow-y: auto; }
+        .pallet-btn { width: 38px; height: 38px; border: 1px solid #cbd5e1; border-radius: 5px; background: white; cursor: pointer; }
         .pallet-btn.answered { background: #10b981; color: white; border-color: #10b981; }
-        .pallet-btn.not-answered { background: #ef4444; color: white; border-color: #ef4444; }
         .pallet-btn.marked { background: #8b5cf6; color: white; border-color: #8b5cf6; border-radius: 50%; }
-
+        .pallet-btn.active { border: 2px solid #2563eb; }
         .palette-footer { padding: 15px; border-top: 1px solid #e2e8f0; }
-        .btn-submit { width: 100%; background: #10b981; color: white; padding: 12px; justify-content: center; }
-        .btn-submit:hover { background: #059669; }
+        .btn-submit { width: 100%; background: #10b981; color: white; padding: 12px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
 
-        /* MOBILE RESPONSIVE */
+        /* Mobile Warning */
+        #mobileWarning {
+            display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: #ef4444; color: white; padding: 15px 25px; border-radius: 8px;
+            font-size: 14px; font-weight: 600; z-index: 10000; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            text-align: center; width: 90%; max-width: 400px;
+        }
+
         @media (max-width: 768px) {
             .test-body { flex-direction: column; }
-            .palette-area { width: auto; margin: 0 15px 15px 15px; height: 250px; }
+            .palette-area { width: auto; margin: 0 15px 15px 15px; height: 200px; }
             .palette-grid { grid-template-columns: repeat(8, 1fr); }
-            .q-bottom-bar { flex-direction: column; gap: 10px; }
-            .btn { width: 100%; justify-content: center; }
         }
     </style>
 </head>
 <body>
 
-    <!-- HEADER -->
-    <div class="test-header">
-        <div class="exam-name">
-            <i class="fa-solid fa-building-columns"></i> <span id="testNameDisplay">Loading...</span>
-        </div>
-        <div class="timer-box">
-            <i class="fa-solid fa-clock"></i>
-            <span id="globalTimerDisplay">00:00:00</span>
+    <!-- MOBILE DESKTOP MODE WARNING -->
+    <div id="mobileWarning">
+        <i class="fa-solid fa-triangle-exclamation"></i> Please turn on <b>Desktop Mode</b> in your browser for the best experience.
+    </div>
+
+    <!-- 1. INSTRUCTIONS MODAL -->
+    <div class="modal-overlay" id="instructionModal">
+        <div class="instruction-box">
+            <div class="inst-header">General Instructions</div>
+            <div class="inst-body">
+                <p><strong>Please read the following instructions carefully:</strong></p>
+                <ul>
+                    <li>Total duration of this test is <strong>90 minutes</strong>.</li>
+                    <li>The clock will be set at the server.</li>
+                    <li>Each question carries 1 mark. <strong>Negative marking of 0.25</strong> is applicable.</li>
+                    <li>You can switch between <strong>Hindi and English</strong> using the button at the top.</li>
+                    <li><strong>Anti-Cheating Warning:</strong> Do not switch tabs or exit full screen. Doing so will submit your test immediately.</li>
+                </ul>
+            </div>
+            <div class="inst-footer">
+                <button class="btn-start" onclick="startActualTest()">I am ready to begin</button>
+            </div>
         </div>
     </div>
 
-    <!-- SECTIONAL TIMER -->
-    <div class="section-timer-box" id="sectionTimerBox">
-        Current Section: <span id="currentSectionName">Reasoning</span> | Time Left: <span id="sectionTimerDisplay">00:15:00</span>
-    </div>
-
-    <!-- MAIN BODY -->
-    <div class="test-body">
+    <!-- 2. MAIN TEST UI -->
+    <div class="test-ui" id="testUI">
         
-        <!-- LEFT: Question Area -->
-        <div class="question-area">
-            <div class="q-top-bar">
-                <div class="q-number">Question No. <span id="qIndex">1</span></div>
-                <div class="q-marks" id="qMarksBox">+1.0 <span class="neg">-0.25</span></div>
-            </div>
-            
-            <div class="q-content">
-                <div class="q-timer" id="qTimerDisplay"><i class="fa-solid fa-hourglass-half"></i> Time left: <span id="qTime">30</span>s</div>
-                <div id="questionText">Loading question...</div>
-                <div class="options-list" id="optionsContainer"></div>
-            </div>
-            
-            <div class="q-bottom-bar">
-                <div style="display: flex; gap: 10px; width: 100%;">
-                    <button class="btn btn-mark" onclick="toggleMark()"><i class="fa-solid fa-star"></i> Mark for Review</button>
-                    <button class="btn btn-outline" onclick="clearResponse()">Clear</button>
-                </div>
-                <div style="display: flex; gap: 10px; width: 100%; justify-content: flex-end;">
-                    <button class="btn btn-outline" onclick="prevQuestion()">← Previous</button>
-                    <button class="btn btn-primary" onclick="nextQuestion()">Save & Next →</button>
-                </div>
+        <div class="test-header">
+            <div class="exam-name"><i class="fa-solid fa-building-columns"></i> SSC CGL Mock 1</div>
+            <div class="header-controls">
+                <button class="lang-btn" id="langToggleBtn" onclick="toggleLanguage()">हिंदी / English</button>
+                <button class="fullscreen-btn" onclick="toggleFullScreen()"><i class="fa-solid fa-expand"></i></button>
+                <div class="timer-box"><i class="fa-solid fa-clock"></i> <span id="globalTimerDisplay">90:00</span></div>
             </div>
         </div>
 
-        <!-- RIGHT: Palette -->
-        <div class="palette-area">
-            <div class="palette-header">
-                <div class="palette-avatar" id="stuAvatar">R</div>
-                <div class="palette-info">
-                    <h4 id="stuName">Rahul Kumar</h4>
-                    <span id="stuId">TG-1001</span>
+        <div class="test-body">
+            <div class="question-area">
+                <div class="q-top-bar">
+                    <div style="font-weight: 600; color: #1e3a8a;">Question No. <span id="qIndex">1</span></div>
+                    <div style="font-size: 13px; font-weight: 600; color: #166534; background: #dcfce7; padding: 4px 10px; border-radius: 5px;">+1.0 <span style="color: #991b1b;">-0.25</span></div>
+                </div>
+                
+                <div class="q-content">
+                    <div id="questionText">Loading question...</div>
+                    <div class="options-list" id="optionsContainer"></div>
+                </div>
+                
+                <div class="q-bottom-bar">
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-mark" onclick="toggleMark()">Mark for Review</button>
+                        <button class="btn" style="background: #e2e8f0; color: #475569;" onclick="clearResponse()">Clear</button>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn" style="background: white; border: 1px solid #cbd5e1;" onclick="prevQuestion()">← Previous</button>
+                        <button class="btn btn-primary" onclick="nextQuestion()">Save & Next →</button>
+                    </div>
                 </div>
             </div>
-            
-            <div class="palette-legend">
-                <div class="legend-item"><div class="box answered"></div> Answered</div>
-                <div class="legend-item"><div class="box not-answered"></div> Not Answered</div>
-                <div class="legend-item"><div class="box marked"></div> Marked</div>
-                <div class="legend-item"><div class="box not-visited"></div> Not Visited</div>
-            </div>
-            
-            <div class="palette-grid" id="paletteContainer"></div>
-            
-            <div class="palette-footer">
-                <button class="btn btn-submit" onclick="submitTest()">Submit Test</button>
+
+            <div class="palette-area">
+                <div class="palette-header">
+                    <div style="width: 40px; height: 40px; background: #3b82f6; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">R</div>
+                    <div>
+                        <div style="font-size: 14px; font-weight: 600;">Rahul Kumar</div>
+                        <div style="font-size: 11px; color: #64748b;">TG-1001</div>
+                    </div>
+                </div>
+                <div class="palette-grid" id="paletteContainer"></div>
+                <div class="palette-footer">
+                    <button class="btn-submit" onclick="submitTest()">Submit Test</button>
+                </div>
             </div>
         </div>
-
     </div>
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
         // ==========================================
-        // 🚨 MAIN SETTING: IS THIS A LIVE TEST OR PRACTICE?
+        // 🚨 MAIN SETTING: Is this a LIVE TEST or PRACTICE?
         // ==========================================
-        // Agar Live Test hai toh 'true' rakhein (Cheating band ho jayegi)
-        // Agar Practice/Missed Test hai toh 'false' rakhein (Bachha aaram se de sakta hai)
-        const isLiveTest = true; 
+        const isLiveTest = true; // false for Practice/Recorded test
 
-        // --- TEST CONFIGURATION ---
-        const testConfig = {
-            name: "SSC CGL Mock 1",
-            totalQuestions: 100,
-            totalTimeMinutes: 90,
-            timerType: "overall", // Options: "overall", "sectional", "question-wise"
-            sections: [
-                { name: "Reasoning", startQ: 1, endQ: 25, timeMinutes: 15 },
-                { name: "General Awareness", startQ: 26, endQ: 50, timeMinutes: 15 },
-                { name: "Quantitative Aptitude", startQ: 51, endQ: 75, timeMinutes: 15 },
-                { name: "English", startQ: 76, endQ: 100, timeMinutes: 15 }
-            ],
-            questionTimeSeconds: 30
-        };
+        const totalQuestions = 100;
+        const totalTimeSeconds = 90 * 60;
 
-        // --- STATE VARIABLES ---
         let currentQuestionIndex = 0;
         let answers = {}; 
         let markedForReview = {};
-        let visited = {};
-        
-        // Timers
-        let globalTimeLeft = testConfig.totalTimeMinutes * 60;
-        let sectionTimeLeft = 0;
-        let qTimeLeft = 0;
-        let globalTimerInterval, sectionTimerInterval, qTimerInterval;
+        let timeLeft = totalTimeSeconds;
+        let timerInterval;
+        let currentLang = 'en'; 
 
-        // --- 🛡️ ANTI-CHEAT LOGIC (Only if isLiveTest is true) ---
-        function enableAntiCheat() {
-            // 1. Disable Right Click
+        // Dummy Data
+        const questionsData = [
+            { 
+                qEn: "Who is known as the Father of the Indian Constitution?", 
+                qHi: "भारतीय संविधान के जनक किसे कहा जाता है?",
+                optsEn: ["Mahatma Gandhi", "Dr. B.R. Ambedkar", "Jawaharlal Nehru", "Sardar Patel"],
+                optsHi: ["महात्मा गांधी", "डॉ. बी.आर. आंबेडकर", "जवाहरलाल नेहरू", "सरदार पटेल"]
+            },
+            { 
+                qEn: "Which is the largest planet in our solar system?", 
+                qHi: "हमारे सौर मंडल का सबसे बड़ा ग्रह कौन सा है?",
+                optsEn: ["Earth", "Mars", "Jupiter", "Saturn"],
+                optsHi: ["पृथ्वी", "मंगल", "बृहस्पति", "शनि"]
+            }
+        ];
+
+        // --- 1. ANTI-CHEAT (Live Only) ---
+        if(isLiveTest) {
             document.addEventListener('contextmenu', e => e.preventDefault());
-            // 2. Disable Copy/Paste
             document.addEventListener('copy', e => e.preventDefault());
             document.addEventListener('paste', e => e.preventDefault());
-            // 3. Disable text selection using CSS
-            document.body.style.userSelect = "none";
             
-            // 4. Tab Switching Detection
             document.addEventListener('visibilitychange', () => {
-                if (document.hidden) {
-                    alert("⚠️ WARNING: Tab switching is not allowed. Your test will submit if you do it again!");
-                    // Future logic: 2nd time violation par submitTest() call karein
+                if (document.hidden && timerInterval) {
+                    alert("⚠️ WARNING: Tab switching detected. Test submitted automatically.");
+                    endTest("Tab Switching Detected");
                 }
             });
         }
 
-        // --- INITIALIZATION ---
-        function initTest() {
-            document.getElementById('testNameDisplay').innerText = testConfig.name;
-
-            // Apply anti-cheat if it's a live test
-            if(isLiveTest) {
-                enableAntiCheat();
-                if (document.documentElement.requestFullscreen) {
-                    document.documentElement.requestFullscreen(); // Force Full Screen
-                }
+        // --- 2. START TEST ---
+        function startActualTest() {
+            // Mobile Check
+            if (window.innerWidth <= 768 && isLiveTest) {
+                document.getElementById('mobileWarning').style.display = 'block';
+                setTimeout(() => { document.getElementById('mobileWarning').style.display = 'none'; }, 4000);
             }
 
-            startGlobalTimer();
-
-            if(testConfig.timerType === 'sectional') {
-                document.getElementById('sectionTimerBox').style.display = 'block';
-                startSectionTimer(0);
+            document.getElementById('instructionModal').style.display = 'none';
+            document.getElementById('testUI').style.display = 'flex';
+            
+            // Full Screen (Only for Live Test)
+            if (isLiveTest && document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
             }
-
+            
+            startTimer();
             loadQuestion(0);
         }
 
-        // --- TIMER FUNCTIONS ---
-        function formatTime(seconds) {
-            const h = Math.floor(seconds / 3600);
-            const m = Math.floor((seconds % 3600) / 60);
-            const s = seconds % 60;
-            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
         }
 
-        function startGlobalTimer() {
-            document.getElementById('globalTimerDisplay').innerText = formatTime(globalTimeLeft);
-            globalTimerInterval = setInterval(() => {
-                globalTimeLeft--;
-                document.getElementById('globalTimerDisplay').innerText = formatTime(globalTimeLeft);
-                if (globalTimeLeft <= 0) endTest("Global Time Up!");
+        // --- 3. TIMER ---
+        function startTimer() {
+            const display = document.getElementById('globalTimerDisplay');
+            display.innerText = `${Math.floor(timeLeft / 60).toString().padStart(2, '0')}:${(timeLeft % 60).toString().padStart(2, '0')}`;
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const m = Math.floor(timeLeft / 60);
+                const s = timeLeft % 60;
+                display.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                if (timeLeft <= 0) endTest("Time Up!");
             }, 1000);
         }
 
-        function startSectionTimer(sectionIndex) {
-            clearInterval(sectionTimerInterval);
-            const section = testConfig.sections[sectionIndex];
-            document.getElementById('currentSectionName').innerText = section.name;
-            sectionTimeLeft = section.timeMinutes * 60;
-            document.getElementById('sectionTimerDisplay').innerText = formatTime(sectionTimeLeft);
-
-            sectionTimerInterval = setInterval(() => {
-                sectionTimeLeft--;
-                document.getElementById('sectionTimerDisplay').innerText = formatTime(sectionTimeLeft);
-                
-                if (sectionTimeLeft <= 0) {
-                    clearInterval(sectionTimerInterval);
-                    alert(`Time up for ${section.name}! Moving to next section.`);
-                    if(sectionIndex < testConfig.sections.length - 1) {
-                        loadQuestion(section.endQ); // Jump to next section
-                    } else {
-                        endTest("All Sections Time Up!");
-                    }
-                }
-            }, 1000);
+        // --- 4. LANGUAGE ---
+        function toggleLanguage() {
+            currentLang = (currentLang === 'en') ? 'hi' : 'en';
+            document.getElementById('langToggleBtn').innerText = (currentLang === 'en') ? 'हिंदी' : 'English';
+            loadQuestion(currentQuestionIndex); 
         }
 
-        function startQuestionTimer() {
-            clearInterval(qTimerInterval);
-            document.getElementById('qTimerDisplay').style.display = 'block';
-            qTimeLeft = testConfig.questionTimeSeconds;
-
-            qTimerInterval = setInterval(() => {
-                qTimeLeft--;
-                document.getElementById('qTime').innerText = qTimeLeft;
-                if (qTimeLeft <= 0) {
-                    clearInterval(qTimerInterval);
-                    nextQuestion(); // Auto move
-                }
-            }, 1000);
-        }
-
-        // --- UI RENDER LOGIC ---
-        const dummyQuestions = [
-            { q: "Who is known as the Father of the Indian Constitution?", opts: ["Mahatma Gandhi", "Dr. B.R. Ambedkar", "Jawaharlal Nehru", "Sardar Patel"] },
-            { q: "Which is the largest planet in our solar system?", opts: ["Earth", "Mars", "Jupiter", "Saturn"] }
-        ];
-
+        // --- 5. RENDER ---
         function renderPalette() {
             const container = document.getElementById('paletteContainer');
             container.innerHTML = '';
-            for (let i = 0; i < testConfig.totalQuestions; i++) {
+            for (let i = 0; i < totalQuestions; i++) {
                 const btn = document.createElement('button');
                 btn.className = 'pallet-btn';
                 btn.innerText = i + 1;
                 btn.onclick = () => loadQuestion(i);
                 
-                if (answers[i]) btn.classList.add('answered');
+                if (answers[i] !== undefined) btn.classList.add('answered');
                 else if (markedForReview[i]) btn.classList.add('marked');
-                else if (visited[i]) btn.classList.add('not-answered');
                 
                 if (i === currentQuestionIndex) btn.classList.add('active');
                 container.appendChild(btn);
@@ -339,26 +282,20 @@
 
         function loadQuestion(index) {
             currentQuestionIndex = index;
-            visited[index] = true;
             document.getElementById('qIndex').innerText = index + 1;
-            
-            if(testConfig.timerType === 'sectional') {
-                const currentSectionIndex = testConfig.sections.findIndex(s => index + 1 >= s.startQ && index + 1 <= s.endQ);
-                if(currentSectionIndex !== -1 && document.getElementById('currentSectionName').innerText !== testConfig.sections[currentSectionIndex].name) {
-                    startSectionTimer(currentSectionIndex);
-                }
-            }
 
-            if(testConfig.timerType === 'question-wise') {
-                startQuestionTimer();
-            }
+            const qData = questionsData[index] || { 
+                qEn: "Question " + (index + 1) + " loading...", qHi: "प्रश्न " + (index + 1) + " लोड हो रहा है...", 
+                optsEn: ["Opt A", "Opt B", "Opt C", "Opt D"], optsHi: ["विकल्प A", "विकल्प B", "विकल्प C", "विकल्प D"] 
+            };
 
-            const qData = dummyQuestions[index] || { q: "Question " + (index + 1) + " text will load from database...", opts: ["Option A", "Option B", "Option C", "Option D"] };
-            document.getElementById('questionText').innerText = qData.q;
+            document.getElementById('questionText').innerText = (currentLang === 'en') ? qData.qEn : qData.qHi;
             
             const optionsContainer = document.getElementById('optionsContainer');
             optionsContainer.innerHTML = '';
-            qData.opts.forEach((opt, i) => {
+            const currentOpts = (currentLang === 'en') ? qData.optsEn : qData.optsHi;
+
+            currentOpts.forEach((opt, i) => {
                 const label = document.createElement('label');
                 label.className = 'option-item';
                 if (answers[index] === i) label.classList.add('selected');
@@ -373,7 +310,6 @@
             renderPalette();
         }
 
-        // Expose functions to window for HTML onclick
         window.selectOption = function(optIndex) {
             answers[currentQuestionIndex] = optIndex;
             renderPalette();
@@ -390,7 +326,7 @@
         }
 
         window.nextQuestion = function() {
-            if (currentQuestionIndex < testConfig.totalQuestions - 1) loadQuestion(currentQuestionIndex + 1);
+            if (currentQuestionIndex < totalQuestions - 1) loadQuestion(currentQuestionIndex + 1);
         }
 
         window.prevQuestion = function() {
@@ -398,14 +334,8 @@
         }
 
         function endTest(reason) {
-            clearInterval(globalTimerInterval);
-            clearInterval(sectionTimerInterval);
-            clearInterval(qTimerInterval);
-            
-            if (document.fullscreenElement) {
-                document.exitFullscreen(); // Exit fullscreen on end
-            }
-            
+            clearInterval(timerInterval);
+            if (document.fullscreenElement) document.exitFullscreen();
             alert(`Test Ended: ${reason}\nRedirecting to dashboard...`);
             window.location.href = "student-dashboard.html";
         }
@@ -415,9 +345,6 @@
                 endTest("Submitted by user");
             }
         }
-
-        // Start
-        window.onload = initTest;
     </script>
 </body>
 </html>
