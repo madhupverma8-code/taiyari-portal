@@ -7,344 +7,269 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: #f4f7f6; color: #333; display: flex; min-height: 100vh; }
+        :root {
+            --primary: #1e3a8a; --primary-light: #3b82f6; --bg-color: #f4f7f6;
+            --sidebar-bg: #0f172a; --text-main: #1e293b; --text-muted: #64748b;
+            --card-bg: #ffffff; --border: #e2e8f0;
+        }
 
-        /* --- SIDEBAR (बाईं तरफ का मेनू) --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
+
+        /* --- SIDEBAR (Collapsible) --- */
         .sidebar {
-            width: 250px; background: #1e3a8a; color: white;
-            display: flex; flex-direction: column; padding: 20px 0;
-            position: fixed; height: 100vh;
+            width: 260px; background: var(--sidebar-bg); color: white;
+            display: flex; flex-direction: column; position: fixed; height: 100vh;
+            transition: 0.3s ease-in-out; z-index: 1000;
         }
-        .sidebar .brand {
-            text-align: center; font-size: 20px; font-weight: 700;
-            margin-bottom: 30px; padding-bottom: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .sidebar .brand span { font-size: 12px; display: block; color: #bfdbfe; font-weight: 400; margin-top: 5px; }
+        .sidebar.closed { transform: translateX(-100%); }
         
+        .brand { padding: 20px; font-size: 20px; font-weight: 700; color: #60a5fa; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .brand span { font-size: 11px; color: #94a3b8; display: block; font-weight: 400; }
+        .close-btn { background: none; border: none; color: white; cursor: pointer; font-size: 18px; }
+
+        .menu-items { flex: 1; overflow-y: auto; padding-top: 15px; }
         .nav-item {
-            padding: 15px 25px; display: flex; align-items: center; gap: 15px;
-            color: #bfdbfe; text-decoration: none; font-size: 15px; font-weight: 500;
-            transition: 0.3s; cursor: pointer;
+            padding: 12px 20px; display: flex; align-items: center; gap: 15px;
+            color: #cbd5e1; font-size: 14px; font-weight: 500; cursor: pointer; transition: 0.2s;
         }
-        .nav-item:hover, .nav-item.active { background: #2563eb; color: white; }
+        .nav-item:hover, .nav-item.active { background: #1e293b; color: #60a5fa; border-left: 4px solid #3b82f6; }
         .nav-item i { font-size: 18px; width: 20px; text-align: center; }
+        .menu-category { padding: 15px 20px 5px; font-size: 10px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 1px; }
 
         /* --- MAIN CONTENT --- */
-        .main-content { flex: 1; margin-left: 250px; padding: 30px; }
-        
-        /* Top Header */
+        .main-content { flex: 1; margin-left: 260px; padding: 20px; transition: 0.3s; width: calc(100% - 260px); }
+        .main-content.full-width { margin-left: 0; width: 100%; }
+
+        /* TOP HEADER */
         .top-header {
             display: flex; justify-content: space-between; align-items: center;
-            background: white; padding: 20px; border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px;
+            background: var(--card-bg); padding: 15px 25px; border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 25px;
         }
-        .top-header h2 { font-size: 22px; color: #1e3a8a; }
-        .top-header .user-info { display: flex; align-items: center; gap: 15px; }
-        .top-header .user-info img { width: 40px; height: 40px; border-radius: 50%; background: #e2e8f0; }
-
-        /* Dashboard Cards */
-        .dashboard-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px; margin-bottom: 30px;
-        }
-        .dash-card {
-            background: white; padding: 25px; border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 5px solid #2563eb;
-            display: flex; flex-direction: column; justify-content: space-between;
-        }
-        .dash-card h3 { font-size: 15px; color: #64748b; margin-bottom: 10px; font-weight: 600; }
-        .dash-card .value { font-size: 32px; font-weight: 700; color: #1e3a8a; margin-bottom: 15px; }
-        .dash-card .btn-action {
-            background: #eff6ff; color: #2563eb; border: none; padding: 10px;
-            border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.3s;
-            text-decoration: none; text-align: center; display: block;
-        }
-        .dash-card .btn-action:hover { background: #2563eb; color: white; }
-
-        /* Pending Payment Alert */
-        .alert-box {
-            background: #fffbeb; border: 1px solid #f59e0b; color: #b45309;
-            padding: 15px 20px; border-radius: 10px; margin-bottom: 30px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .alert-box strong { font-size: 16px; }
-        .alert-box button {
-            background: #f59e0b; color: white; border: none; padding: 8px 15px;
-            border-radius: 6px; font-weight: 600; cursor: pointer;
-        }
-
-        /* Table Style */
-        .section-title { font-size: 18px; color: #1e3a8a; margin-bottom: 15px; font-weight: 600; }
-        .table-container {
-            background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            overflow: hidden;
-        }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 15px 20px; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
-        th { background: #f8fafc; color: #475569; font-weight: 600; }
-        tr:last-child td { border-bottom: none; }
+        .menu-toggle { font-size: 20px; cursor: pointer; color: var(--primary-light); background: #eff6ff; padding: 8px 12px; border-radius: 8px; }
         
-        .status-badge {
-            padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;
+        /* PROFILE DROPDOWN */
+        .profile-section { position: relative; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        .profile-section span { font-weight: 600; font-size: 14px; }
+        .profile-section img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary-light); }
+        .profile-dropdown {
+            position: absolute; top: 120%; right: 0; background: white;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1); border-radius: 8px; width: 180px;
+            display: none; flex-direction: column; overflow: hidden; border: 1px solid var(--border);
         }
-        .status-active { background: #dcfce7; color: #166534; }
-        .status-pending { background: #fef3c7; color: #92400e; }
+        .profile-dropdown.active { display: flex; }
+        .profile-dropdown a { padding: 12px 15px; text-decoration: none; color: var(--text-main); font-size: 13px; transition: 0.2s; }
+        .profile-dropdown a:hover { background: #f8fafc; color: var(--primary-light); }
+        .profile-dropdown a.logout { color: #ef4444; border-top: 1px solid var(--border); }
 
-        /* Add Student Modal */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000;
-        }
-        .modal-content {
-            background: white; width: 90%; max-width: 500px; padding: 30px;
-            border-radius: 12px; position: relative;
-        }
-        .close-btn {
-            position: absolute; top: 15px; right: 20px; font-size: 20px;
-            cursor: pointer; color: #64748b;
-        }
-        .modal-content h3 { margin-bottom: 20px; color: #1e3a8a; }
+        /* SECTIONS */
+        .admin-section { display: none; animation: fadeIn 0.3s; }
+        .admin-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* CARDS */
+        .card { background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
+        .card h3 { font-size: 16px; color: var(--primary); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-size: 13px; font-weight: 600; color: #475569; }
-        .form-group input, .form-group select {
-            width: 100%; padding: 10px; border: 1px solid #cbd5e1;
-            border-radius: 6px; font-size: 14px; outline: none;
-        }
-        .btn-primary {
-            width: 100%; background: #2563eb; color: white; border: none;
-            padding: 12px; border-radius: 8px; font-size: 15px; font-weight: 600;
-            cursor: pointer; margin-top: 10px;
-        }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 5px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; outline: none; }
+        .btn-save { background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; }
+        .btn-primary { background: var(--primary-light); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; }
 
-        /* Mobile Responsive */
+        /* DASHBOARD STATS */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .stat-card { background: var(--card-bg); padding: 20px; border-radius: 12px; border-left: 5px solid var(--primary-light); box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .stat-card h4 { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase; }
+        .stat-card .val { font-size: 28px; font-weight: 700; color: var(--text-main); }
+
+        /* TABLE */
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 12px; border-bottom: 1px solid var(--border); text-align: left; }
+        th { background: #f8fafc; color: var(--text-muted); font-weight: 600; }
+
         @media (max-width: 768px) {
-            body { flex-direction: column; }
-            .sidebar { width: 100%; height: auto; position: relative; padding: 10px 0; }
-            .main-content { margin-left: 0; padding: 15px; }
-            .dashboard-grid { grid-template-columns: 1fr; }
-            .top-header { flex-direction: column; gap: 15px; text-align: center; }
-            .table-container { overflow-x: auto; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; width: 100%; }
         }
     </style>
 </head>
 <body>
 
     <!-- SIDEBAR -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="brand">
-            <i class="fa-solid fa-building-columns"></i> Taiyari Portal
-            <span>Coaching Panel</span>
+            <div>
+                <i class="fa-solid fa-building"></i> ABC Coaching
+                <span>Coaching Panel</span>
+            </div>
+            <button class="close-btn" onclick="toggleSidebar()"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <a class="nav-item active" onclick="showSection('dashboard')"><i class="fa-solid fa-house"></i> Dashboard</a>
-        <a class="nav-item" onclick="showSection('students')"><i class="fa-solid fa-users"></i> My Students</a>
-        <a class="nav-item" onclick="showSection('tests')"><i class="fa-solid fa-file-pen"></i> Tests & Results</a>
-        <a class="nav-item" onclick="showSection('billing')"><i class="fa-solid fa-file-invoice"></i> Billing & Invoices</a>
-        <a class="nav-item" style="margin-top: auto; color: #f87171;" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+
+        <div class="menu-items">
+            <a class="nav-item active" onclick="showSection('dashboard', this)"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+            
+            <div class="menu-category">Student Management</div>
+            <a class="nav-item" onclick="showSection('add-student', this)"><i class="fa-solid fa-user-plus"></i> Add Student</a>
+            <a class="nav-item" onclick="showSection('bulk-upload', this)"><i class="fa-solid fa-upload"></i> Bulk Upload (CSV)</a>
+            <a class="nav-item" onclick="showSection('my-students', this)"><i class="fa-solid fa-users"></i> My Students</a>
+
+            <div class="menu-category">Tests & Results</div>
+            <a class="nav-item" onclick="showSection('my-tests', this)"><i class="fa-solid fa-file-pen"></i> My Tests</a>
+            <a class="nav-item" onclick="showSection('results', this)"><i class="fa-solid fa-square-poll-vertical"></i> Results & Analysis</a>
+        </div>
     </div>
 
     <!-- MAIN CONTENT -->
-    <div class="main-content">
+    <div class="main-content" id="mainContent">
         
         <!-- TOP HEADER -->
         <div class="top-header">
-            <h2 id="pageTitle">Dashboard Overview</h2>
-            <div class="user-info">
-                <span id="coachingNameDisplay">ABC Coaching Center</span>
-                <img src="https://ui-avatars.com/api/?name=ABC&background=1e3a8a&color=fff" alt="Logo">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></div>
+                <h2 id="pageTitle" style="font-size: 18px; color: var(--primary);">Dashboard Overview</h2>
+            </div>
+            
+            <!-- PROFILE DROPDOWN (Logout Here) -->
+            <div class="profile-section" onclick="toggleProfileMenu()">
+                <span>ABC Coaching</span>
+                <img src="https://ui-avatars.com/api/?name=ABC&background=1e3a8a&color=fff" alt="Profile">
+                
+                <div class="profile-dropdown" id="profileDropdown">
+                    <a href="#"><i class="fa-solid fa-gear"></i> Profile Settings</a>
+                    <a href="index.html" class="logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+                </div>
             </div>
         </div>
 
-        <!-- SECTION 1: DASHBOARD OVERVIEW -->
-        <div id="section-dashboard">
-            <!-- Pending Payment Alert -->
-            <div class="alert-box">
-                <div>
-                    <strong><i class="fa-solid fa-triangle-exclamation"></i> Payment Pending</strong>
-                    <p style="font-size: 13px; margin-top: 5px;">Your final payment of ₹2250 is pending. Please clear it to unlock all features.</p>
-                </div>
-                <button onclick="alert('Payment Gateway will open here!')">Pay Now</button>
+        <!-- 1. DASHBOARD OVERVIEW -->
+        <div id="section-dashboard" class="admin-section active">
+            <div class="stats-grid">
+                <div class="stat-card"><h4>Total Students</h4><div class="val">120</div></div>
+                <div class="stat-card" style="border-left-color: #f59e0b;"><h4>Tests Conducted</h4><div class="val">05</div></div>
+                <div class="stat-card" style="border-left-color: #8b5cf6;"><h4>Subscription Plan</h4><div class="val" style="font-size: 20px;">Monthly Pro</div></div>
             </div>
-
-            <div class="dashboard-grid">
-                <div class="dash-card" style="border-left-color: #10b981;">
-                    <h3>Total Students</h3>
-                    <div class="value">120</div>
-                    <a href="#" class="btn-action" onclick="showSection('students')">Manage Students</a>
-                </div>
-                <div class="dash-card" style="border-left-color: #f59e0b;">
-                    <h3>Tests Conducted</h3>
-                    <div class="value">05</div>
-                    <a href="#" class="btn-action" onclick="showSection('tests')">View Tests</a>
-                </div>
-                <div class="dash-card" style="border-left-color: #8b5cf6;">
-                    <h3>Active Plan</h3>
-                    <div class="value" style="font-size: 24px;">Monthly Pro</div>
-                    <span style="font-size: 12px; color: #64748b;">Valid till: 30 Nov 2026</span>
-                </div>
-            </div>
-
-            <div class="section-title">Recent Registrations</div>
-            <div class="table-container">
+            <div class="card">
+                <h3>Recent Registrations</h3>
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Student Name</th>
-                            <th>Mobile</th>
-                            <th>Exam Category</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Rahul Kumar</td>
-                            <td>9876543210</td>
-                            <td>SSC CGL</td>
-                            <td><span class="status-badge status-active">Active</span></td>
-                        </tr>
-                        <tr>
-                            <td>Priya Singh</td>
-                            <td>9876543211</td>
-                            <td>Railway Group D</td>
-                            <td><span class="status-badge status-active">Active</span></td>
-                        </tr>
-                        <tr>
-                            <td>Amit Verma</td>
-                            <td>9876543212</td>
-                            <td>Bank PO</td>
-                            <td><span class="status-badge status-pending">Pending OTP</span></td>
-                        </tr>
-                    </tbody>
+                    <tr><th>Student Name</th><th>Mobile</th><th>Exam</th><th>Status</th></tr>
+                    <tr><td>Rahul Kumar</td><td>9876543210</td><td>SSC CGL</td><td style="color: #10b981;">Active</td></tr>
+                    <tr><td>Priya Singh</td><td>9876543211</td><td>Railway</td><td style="color: #10b981;">Active</td></tr>
                 </table>
             </div>
         </div>
 
-        <!-- SECTION 2: STUDENTS (Placeholder) -->
-        <div id="section-students" style="display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <div class="section-title" style="margin: 0;">My Students List</div>
-                <button class="btn-primary" style="width: auto; margin: 0; padding: 10px 20px;" onclick="openAddStudentModal()">
-                    <i class="fa-solid fa-plus"></i> Add New Student
-                </button>
+        <!-- 2. ADD STUDENT (Single Registration) -->
+        <div id="section-add-student" class="admin-section">
+            <div class="card">
+                <h3>Register New Student</h3>
+                <div class="form-group"><label>Student Name</label><input type="text" placeholder="Full Name"></div>
+                <div class="form-group"><label>Mobile Number</label><input type="tel" placeholder="10-digit mobile"></div>
+                <div class="form-group"><label>Email ID</label><input type="email" placeholder="student@email.com"></div>
+                <div class="form-group">
+                    <label>Target Exam</label>
+                    <select>
+                        <option>SSC CGL</option><option>SSC CHSL</option><option>Railway Group D</option><option>Bank PO</option>
+                    </select>
+                </div>
+                <button class="btn-save" onclick="alert('Student Registered Successfully! Login details sent.')">Register Student</button>
             </div>
-            <div class="table-container">
+        </div>
+
+        <!-- 3. BULK UPLOAD (CSV) -->
+        <div id="section-bulk-upload" class="admin-section">
+            <div class="card">
+                <h3>Bulk Student Upload (CSV)</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Upload an Excel/CSV file with columns: Name, Mobile, Email, Target Exam.</p>
+                <div class="form-group"><label>Upload CSV File</label><input type="file" accept=".csv"></div>
+                <button class="btn-primary" onclick="alert('Students Added Successfully!')">Upload CSV</button>
+            </div>
+        </div>
+
+        <!-- 4. MY STUDENTS (List & Share Link) -->
+        <div id="section-my-students" class="admin-section">
+            <div class="card" style="background: #eff6ff; border: 1px solid #bfdbfe;">
+                <h3 style="color: #1e40af; border-bottom: none;">Share Registration Link</h3>
+                <p style="font-size: 13px; color: #1e3a8a; margin-bottom: 10px;">Send this link to students. They can register themselves.</p>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" value="https://taiyari-portal.in/register?code=LKO-ABC" readonly style="background: white;">
+                    <button class="btn-primary" onclick="alert('Link Copied!')">Copy Link</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>My Registered Students</h3>
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Roll No.</th>
-                            <th>Name</th>
-                            <th>Mobile</th>
-                            <th>Email</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>TG-1001</td>
-                            <td>Rahul Kumar</td>
-                            <td>9876543210</td>
-                            <td>rahul@example.com</td>
-                            <td><button style="color: #2563eb; border: none; background: none; cursor: pointer;">View</button></td>
-                        </tr>
-                    </tbody>
+                    <tr><th>Roll No</th><th>Name</th><th>Mobile</th><th>Exam</th><th>Action</th></tr>
+                    <tr><td>TG-1001</td><td>Rahul Kumar</td><td>9876543210</td><td>SSC CGL</td><td><button style="color: #ef4444; border:none; background:none; cursor:pointer;">Remove</button></td></tr>
                 </table>
             </div>
         </div>
 
-        <!-- SECTION 3: TESTS (Placeholder) -->
-        <div id="section-tests" style="display: none;">
-            <div class="section-title">Test & Results</div>
-            <p style="color: #64748b;">Tests scheduled by Admin will appear here.</p>
+        <!-- 5. MY TESTS (View Scheduled Tests) -->
+        <div id="section-my-tests" class="admin-section">
+            <div class="card">
+                <h3>Scheduled Tests for Your Coaching</h3>
+                <table>
+                    <tr><th>Test Name</th><th>Date & Time</th><th>Status</th></tr>
+                    <tr><td>SSC CGL Mock 1</td><td>05 Nov 2026, 10:00 AM</td><td style="color: #10b981;">Upcoming</td></tr>
+                </table>
+            </div>
         </div>
 
-        <!-- SECTION 4: BILLING (Placeholder) -->
-        <div id="section-billing" style="display: none;">
-            <div class="section-title">Billing & Invoices</div>
-            <p style="color: #64748b;">Your payment history and invoices will appear here.</p>
+        <!-- 6. RESULTS & ANALYSIS -->
+        <div id="section-results" class="admin-section">
+            <div class="card">
+                <h3>Download Student Results</h3>
+                <div class="form-group">
+                    <label>Select Test</label>
+                    <select><option>SSC CGL Mock 1</option></select>
+                </div>
+                <button class="btn-save" onclick="alert('Downloading Master Excel Sheet...')">Download Excel Report</button>
+            </div>
         </div>
 
-    </div>
-
-    <!-- ADD STUDENT MODAL -->
-    <div id="addStudentModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeAddStudentModal()">&times;</span>
-            <h3>Add New Student</h3>
-            <div class="form-group">
-                <label>Full Name</label>
-                <input type="text" placeholder="Enter student name">
-            </div>
-            <div class="form-group">
-                <label>Mobile Number</label>
-                <input type="tel" placeholder="10-digit mobile number">
-            </div>
-            <div class="form-group">
-                <label>Email ID</label>
-                <input type="email" placeholder="student@example.com">
-            </div>
-            <div class="form-group">
-                <label>Target Exam</label>
-                <select>
-                    <option>SSC CGL</option>
-                    <option>SSC CHSL</option>
-                    <option>Railway Group D</option>
-                    <option>Bank PO</option>
-                </select>
-            </div>
-            <button class="btn-primary" onclick="alert('Student Added Successfully!')">Register Student</button>
-        </div>
     </div>
 
     <!-- JAVASCRIPT LOGIC -->
-    <script type="module">
-        // Firebase config (Future use for actual data fetching)
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        const firebaseConfig = {
-            apiKey: "AIzaSyArgULcCrtX6Cax4m0T7lXQuuTGc64d2AE",
-            authDomain: "taiyari-portal.firebaseapp.com",
-            projectId: "taiyari-portal",
-            storageBucket: "taiyari-portal.firebasestorage.app",
-            messagingSenderId: "130787040569",
-            appId: "1:130787040569:web:8b0a40aa8d836cadd7dce8"
-        };
-        const app = initializeApp(firebaseConfig);
+    <script>
+        // Sidebar Toggle
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('closed');
+            document.getElementById('mainContent').classList.toggle('full-width');
+        }
+
+        // Profile Dropdown Toggle
+        function toggleProfileMenu() {
+            document.getElementById('profileDropdown').classList.toggle('active');
+        }
+
+        // Close dropdown if clicked outside
+        window.onclick = function(event) {
+            if (!event.target.closest('.profile-section')) {
+                document.getElementById('profileDropdown').classList.remove('active');
+            }
+        }
 
         // Navigation Logic
-        window.showSection = function(sectionId) {
-            // Hide all sections
-            document.querySelectorAll('.main-content > div[id^="section-"]').forEach(el => el.style.display = 'none');
+        function showSection(sectionId, element) {
+            document.querySelectorAll('.admin-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-
-            // Show selected section
-            document.getElementById('section-' + sectionId).style.display = 'block';
             
-            // Update Page Title
+            document.getElementById('section-' + sectionId).classList.add('active');
+            if(element) element.classList.add('active');
+
             const titles = {
                 'dashboard': 'Dashboard Overview',
-                'students': 'Manage Students',
-                'tests': 'Tests & Results',
-                'billing': 'Billing & Invoices'
+                'add-student': 'Add New Student',
+                'bulk-upload': 'Bulk Student Upload',
+                'my-students': 'My Students',
+                'my-tests': 'Scheduled Tests',
+                'results': 'Results & Analysis'
             };
-            document.getElementById('pageTitle').innerText = titles[sectionId];
-
-            // Highlight active nav
-            event.target.closest('.nav-item').classList.add('active');
-        }
-
-        // Modal Logic
-        window.openAddStudentModal = function() {
-            document.getElementById('addStudentModal').style.display = 'flex';
-        }
-
-        window.closeAddStudentModal = function() {
-            document.getElementById('addStudentModal').style.display = 'none';
-        }
-
-        // Logout Logic
-        window.logout = function() {
-            alert("Logging out...");
-            window.location.href = "index.html";
+            document.getElementById('pageTitle').innerText = titles[sectionId] || 'Coaching Panel';
         }
     </script>
 </body>
