@@ -10,25 +10,23 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background-color: #f4f7f6; color: #333; display: flex; min-height: 100vh; overflow-x: hidden; }
 
-        /* --- SIDEBAR (Collapsible) --- */
+        /* --- SIDEBAR --- */
         .sidebar {
             width: 260px; background: #0f172a; color: white;
             display: flex; flex-direction: column; padding: 20px 0;
-            position: fixed; height: 100vh; transition: 0.3s;
-            z-index: 1000; border-right: 1px solid #1e293b;
+            position: fixed; height: 100vh; transition: 0.3s; z-index: 1000;
         }
         .sidebar.closed { transform: translateX(-100%); }
         
         .sidebar .brand {
-            text-align: center; font-size: 20px; font-weight: 700;
-            margin-bottom: 20px; padding-bottom: 20px;
+            font-size: 20px; font-weight: 700; padding: 0 20px 20px;
             border-bottom: 1px solid rgba(255,255,255,0.1); color: #60a5fa;
-            display: flex; justify-content: space-between; align-items: center; padding: 0 20px;
+            display: flex; justify-content: space-between; align-items: center;
         }
         .sidebar .brand span { font-size: 12px; display: block; color: #94a3b8; font-weight: 400; margin-top: 5px; }
         .close-btn { background: none; border: none; color: white; cursor: pointer; font-size: 18px; }
 
-        .menu-items { flex: 1; overflow-y: auto; }
+        .menu-items { flex: 1; overflow-y: auto; padding-top: 10px; }
         .menu-items::-webkit-scrollbar { width: 5px; }
         .menu-items::-webkit-scrollbar-thumb { background: #334155; border-radius: 5px; }
 
@@ -39,14 +37,12 @@
         }
         .nav-item:hover, .nav-item.active { background: #1e293b; color: #60a5fa; border-left: 4px solid #3b82f6; }
         .nav-item i { font-size: 16px; width: 20px; text-align: center; }
-        
-        .menu-category { padding: 15px 20px 5px; font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 1px; }
+        .menu-category { padding: 15px 20px 5px; font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; }
 
         /* --- MAIN CONTENT --- */
         .main-content { flex: 1; margin-left: 260px; padding: 20px; transition: 0.3s; width: calc(100% - 260px); }
         .main-content.full-width { margin-left: 0; width: 100%; }
 
-        /* Top Header */
         .top-header {
             display: flex; justify-content: space-between; align-items: center;
             background: white; padding: 15px 25px; border-radius: 10px;
@@ -54,7 +50,22 @@
         }
         .menu-toggle { font-size: 20px; cursor: pointer; color: #1e3a8a; background: #eff6ff; padding: 8px 12px; border-radius: 8px; }
         .top-header h2 { font-size: 20px; color: #0f172a; }
-        .admin-profile { display: flex; align-items: center; gap: 10px; font-weight: 600; color: #1e3a8a; }
+        
+        .admin-section { display: none; animation: fadeIn 0.4s; }
+        .admin-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Form Styles */
+        .settings-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .settings-card h3 { font-size: 18px; color: #1e3a8a; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 5px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; outline: none; }
+        .form-group input:focus, .form-group select:focus { border-color: #3b82f6; }
+        
+        .btn-save { background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        .btn-save:hover { background: #059669; }
+        .btn-primary { background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; }
 
         /* Dashboard Cards */
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
@@ -62,22 +73,12 @@
         .dash-card h3 { font-size: 14px; color: #64748b; margin-bottom: 10px; font-weight: 600; }
         .dash-card .value { font-size: 28px; font-weight: 700; color: #0f172a; }
 
-        /* Form Styles for Settings */
-        .settings-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .settings-card h3 { font-size: 18px; color: #1e3a8a; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 5px; }
-        .form-group input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; outline: none; }
-        .form-group input:focus { border-color: #3b82f6; }
-        .btn-save { background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        .btn-save:hover { background: #059669; }
+        /* Table */
+        .table-container { background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 15px 20px; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
+        th { background: #f8fafc; color: #475569; font-weight: 600; }
 
-        /* Sections (Hidden by default) */
-        .admin-section { display: none; animation: fadeIn 0.4s; }
-        .admin-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Responsive */
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.open { transform: translateX(0); }
@@ -101,11 +102,10 @@
             <div class="menu-category">Main</div>
             <a class="nav-item active" onclick="showSection('dashboard', this)"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
             
-            <div class="menu-category">Tests & Exams</div>
+            <div class="menu-category">Test Management</div>
             <a class="nav-item" onclick="showSection('live-tests', this)"><i class="fa-solid fa-tower-broadcast"></i> Manage Live Tests</a>
-            <a class="nav-item" onclick="showSection('archive-tests', this)"><i class="fa-solid fa-box-archive"></i> Test Archive</a>
-            <a class="nav-item" onclick="showSection('test-schedule', this)"><i class="fa-solid fa-calendar-days"></i> Test Schedule</a>
-
+            <a class="nav-item" onclick="showSection('archive-tests', this)"><i class="fa-solid fa-box-archive"></i> Archived Tests</a>
+            
             <div class="menu-category">Users & Billing</div>
             <a class="nav-item" onclick="showSection('coachings', this)"><i class="fa-solid fa-building"></i> Manage Coachings</a>
             <a class="nav-item" onclick="showSection('students', this)"><i class="fa-solid fa-user-graduate"></i> Manage Students</a>
@@ -113,192 +113,199 @@
             <a class="nav-item" onclick="showSection('coupons', this)"><i class="fa-solid fa-ticket"></i> Manage Coupons</a>
 
             <div class="menu-category">Website Content</div>
+            <a class="nav-item" onclick="showSection('student-dashboard-mgr', this)"><i class="fa-solid fa-table-columns"></i> Student Dashboard UI</a>
             <a class="nav-item" onclick="showSection('header-mgr', this)"><i class="fa-solid fa-heading"></i> Header Manager</a>
             <a class="nav-item" onclick="showSection('footer-mgr', this)"><i class="fa-solid fa-shoe-prints"></i> Footer Manager</a>
             <a class="nav-item" onclick="showSection('social-mgr', this)"><i class="fa-solid fa-share-nodes"></i> Social Media Links</a>
             <a class="nav-item" onclick="showSection('notice-mgr', this)"><i class="fa-solid fa-bullhorn"></i> Notice Board</a>
-            <a class="nav-item" onclick="showSection('pages-mgr', this)"><i class="fa-solid fa-file-lines"></i> Pages (About/Privacy)</a>
-            <a class="nav-item" onclick="showSection('gallery-mgr', this)"><i class="fa-solid fa-images"></i> Photo Gallery</a>
-            <a class="nav-item" onclick="showSection('reviews-mgr', this)"><i class="fa-solid fa-star"></i> Reviews Manager</a>
-
-            <div class="menu-category">Settings</div>
-            <a class="nav-item" onclick="showSection('global-settings', this)"><i class="fa-solid fa-gear"></i> Global Settings</a>
-            <a class="nav-item" onclick="showSection('email-settings', this)"><i class="fa-solid fa-envelope"></i> Email/WhatsApp API</a>
-            <a class="nav-item" style="color:#f87171;" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         </div>
     </div>
 
     <!-- MAIN CONTENT -->
     <div class="main-content" id="mainContent">
         
-        <!-- TOP HEADER -->
         <div class="top-header">
             <div style="display: flex; align-items: center; gap: 15px;">
                 <div class="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></div>
                 <h2 id="pageTitle">Dashboard Overview</h2>
             </div>
-            <div class="admin-profile">
-                <img src="https://ui-avatars.com/api/?name=Admin&background=1e3a8a&color=fff" style="width:35px; border-radius:50%;">
-                Madhup Verma
-            </div>
+            <div style="font-weight: 600; color: #1e3a8a;">Madhup Verma</div>
         </div>
 
-        <!-- 1. DASHBOARD SECTION -->
+        <!-- 1. DASHBOARD -->
         <div id="section-dashboard" class="admin-section active">
             <div class="dashboard-grid">
-                <div class="dash-card" style="border-left-color: #10b981;">
-                    <h3>Total Coachings</h3>
-                    <div class="value">12</div>
-                </div>
-                <div class="dash-card" style="border-left-color: #f59e0b;">
-                    <h3>Total Students</h3>
-                    <div class="value">450</div>
-                </div>
-                <div class="dash-card" style="border-left-color: #8b5cf6;">
-                    <h3>Active Tests</h3>
-                    <div class="value">03</div>
-                </div>
-                <div class="dash-card" style="border-left-color: #ef4444;">
-                    <h3>Pending Payments</h3>
-                    <div class="value">₹15,000</div>
-                </div>
-            </div>
-            <div class="settings-card">
-                <h3>Quick Actions</h3>
-                <button class="btn-save" onclick="showSection('live-tests')">Create New Test</button>
-                <button class="btn-save" style="background:#3b82f6;" onclick="showSection('notice-mgr')">Update Notice Board</button>
+                <div class="dash-card" style="border-left-color: #10b981;"><h3>Total Coachings</h3><div class="value">12</div></div>
+                <div class="dash-card" style="border-left-color: #f59e0b;"><h3>Total Students</h3><div class="value">450</div></div>
+                <div class="dash-card" style="border-left-color: #8b5cf6;"><h3>Live Tests</h3><div class="value">03</div></div>
             </div>
         </div>
 
-        <!-- 2. SOCIAL MEDIA MANAGER (New Addition) -->
-        <div id="section-social-mgr" class="admin-section">
+        <!-- 2. MANAGE LIVE TESTS (Updated with Timer Options) -->
+        <div id="section-live-tests" class="admin-section">
             <div class="settings-card">
-                <h3><i class="fa-solid fa-share-nodes"></i> Manage Social Media Links</h3>
-                <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">These links will appear in the website footer and contact pages.</p>
+                <h3>Create New Live Test</h3>
+                <div class="form-group">
+                    <label>Test Name</label>
+                    <input type="text" placeholder="e.g., SSC CGL Tier 1 Mock 01">
+                </div>
+                <div class="form-group">
+                    <label>Total Questions</label>
+                    <input type="number" placeholder="e.g., 100">
+                </div>
                 
                 <div class="form-group">
-                    <label><i class="fa-brands fa-instagram" style="color:#E1306C;"></i> Instagram Link</label>
-                    <input type="url" placeholder="https://instagram.com/yourpage">
-                </div>
-                <div class="form-group">
-                    <label><i class="fa-brands fa-facebook" style="color:#1877F2;"></i> Facebook Link</label>
-                    <input type="url" placeholder="https://facebook.com/yourpage">
-                </div>
-                <div class="form-group">
-                    <label><i class="fa-brands fa-whatsapp" style="color:#25D366;"></i> WhatsApp Support Link (wa.me)</label>
-                    <input type="url" placeholder="https://wa.me/919876543210">
-                </div>
-                <div class="form-group">
-                    <label><i class="fa-brands fa-youtube" style="color:#FF0000;"></i> YouTube Channel</label>
-                    <input type="url" placeholder="https://youtube.com/c/yourchannel">
-                </div>
-                <div class="form-group">
-                    <label><i class="fa-brands fa-telegram" style="color:#0088cc;"></i> Telegram Channel</label>
-                    <input type="url" placeholder="https://t.me/yourchannel">
+                    <label>Timer Type</label>
+                    <select id="timerTypeSelect" onchange="toggleTimerSettings()">
+                        <option value="overall">Overall Timer (e.g., Railway, UP Police)</option>
+                        <option value="sectional">Sectional Timer (e.g., SSC, Bank)</option>
+                        <option value="question-wise">Question-wise Timer</option>
+                    </select>
                 </div>
 
-                <button class="btn-save" onclick="alert('Social Links Saved Successfully!')">Save Links</button>
+                <!-- Overall Timer Input -->
+                <div id="overallTimerBox" class="form-group">
+                    <label>Total Time (Minutes)</label>
+                    <input type="number" placeholder="e.g., 90">
+                </div>
+
+                <!-- Question-wise Timer Input -->
+                <div id="questionTimerBox" class="form-group" style="display: none;">
+                    <label>Time per Question (Seconds)</label>
+                    <input type="number" placeholder="e.g., 30">
+                </div>
+
+                <!-- Sectional Timer Inputs -->
+                <div id="sectionalTimerBox" style="display: none; background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                    <p style="font-size: 13px; font-weight: 600; margin-bottom: 10px; color: #2563eb;">Section Settings</p>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <input type="text" placeholder="Section Name (e.g. Reasoning)" style="flex: 2;">
+                        <input type="number" placeholder="Questions (e.g. 25)" style="flex: 1;">
+                        <input type="number" placeholder="Mins (e.g. 15)" style="flex: 1;">
+                    </div>
+                    <button class="btn-primary" style="font-size: 12px; padding: 5px 10px;">+ Add Section</button>
+                </div>
+
+                <div class="form-group" style="display: flex; gap: 10px;">
+                    <div style="flex: 1;">
+                        <label>Negative Marking</label>
+                        <select>
+                            <option>-0.25</option>
+                            <option>-0.33</option>
+                            <option>No Negative</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-save" onclick="alert('Test Created & Scheduled!')">Publish Live Test</button>
             </div>
         </div>
 
-        <!-- 3. HEADER MANAGER -->
-        <div id="section-header-mgr" class="admin-section">
+        <!-- 3. ARCHIVE TESTS -->
+        <div id="section-archive-tests" class="admin-section">
             <div class="settings-card">
-                <h3>Header Settings</h3>
-                <div class="form-group">
-                    <label>Website Logo Text</label>
-                    <input type="text" value="Taiyari Portal">
+                <h3>Manage Archived (Past) Tests</h3>
+                <p style="font-size: 14px; color: #64748b; margin-bottom: 15px;">These tests are finished. Students can access them in Practice Mode.</p>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Test Name</th><th>Date Conducted</th><th>Status</th><th>Action</th></tr></thead>
+                        <tbody>
+                            <tr><td>SSC CGL Mock 01</td><td>25 Oct 2026</td><td>Archived</td><td><button style="color: #ef4444; border:none; background:none; cursor:pointer;">Delete</button></td></tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="form-group">
-                    <label>App Download Link</label>
-                    <input type="url" placeholder="Enter Play Store link">
-                </div>
-                <button class="btn-save" onclick="alert('Header Updated!')">Update Header</button>
             </div>
         </div>
 
-        <!-- Placeholder Sections for other menus (to avoid errors) -->
-        <div id="section-live-tests" class="admin-section"><h2>Manage Live Tests (Coming Soon)</h2></div>
-        <div id="section-archive-tests" class="admin-section"><h2>Test Archive (Coming Soon)</h2></div>
-        <div id="section-test-schedule" class="admin-section"><h2>Test Schedule (Coming Soon)</h2></div>
+        <!-- 4. STUDENT DASHBOARD UI MANAGER -->
+        <div id="section-student-dashboard-mgr" class="admin-section">
+            <div class="settings-card">
+                <h3>Candidate Dashboard Settings</h3>
+                <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">Control what students see on their dashboard after logging in.</p>
+                
+                <div class="form-group" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+                    <label style="margin: 0;">Show Average Score</label>
+                    <input type="checkbox" checked style="transform: scale(1.5);">
+                </div>
+                <div class="form-group" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+                    <label style="margin: 0;">Show Recent Results Table</label>
+                    <input type="checkbox" checked style="transform: scale(1.5);">
+                </div>
+                <div class="form-group" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+                    <label style="margin: 0;">Show Missed Tests Option</label>
+                    <input type="checkbox" checked style="transform: scale(1.5);">
+                </div>
+                <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+                    <label style="margin: 0;">Allow Premium Plan Upsell</label>
+                    <input type="checkbox" checked style="transform: scale(1.5);">
+                </div>
+
+                <button class="btn-save" onclick="alert('Dashboard Settings Updated!')">Save Changes</button>
+            </div>
+        </div>
+
+        <!-- 5. SOCIAL MEDIA LINKS -->
+        <div id="section-social-mgr" class="admin-section">
+            <div class="settings-card">
+                <h3>Manage Social Media Links</h3>
+                <div class="form-group"><label>Instagram Link</label><input type="url" placeholder="https://instagram.com/..."></div>
+                <div class="form-group"><label>Facebook Link</label><input type="url" placeholder="https://facebook.com/..."></div>
+                <div class="form-group"><label>WhatsApp Support Link</label><input type="url" placeholder="https://wa.me/91..."></div>
+                <button class="btn-save" onclick="alert('Links Saved!')">Save Links</button>
+            </div>
+        </div>
+
+        <!-- Placeholder Sections for others -->
         <div id="section-coachings" class="admin-section"><h2>Manage Coachings (Coming Soon)</h2></div>
         <div id="section-students" class="admin-section"><h2>Manage Students (Coming Soon)</h2></div>
-        <div id="section-payments" class="admin-section"><h2>Payments & Billing (Coming Soon)</h2></div>
-        <div id="section-coupons" class="admin-section"><h2>Manage Coupons (Coming Soon)</h2></div>
+        <div id="section-payments" class="admin-section"><h2>Payments (Coming Soon)</h2></div>
+        <div id="section-coupons" class="admin-section"><h2>Coupons (Coming Soon)</h2></div>
+        <div id="section-header-mgr" class="admin-section"><h2>Header Manager (Coming Soon)</h2></div>
         <div id="section-footer-mgr" class="admin-section"><h2>Footer Manager (Coming Soon)</h2></div>
-        <div id="section-notice-mgr" class="admin-section"><h2>Notice Board Manager (Coming Soon)</h2></div>
-        <div id="section-pages-mgr" class="admin-section"><h2>Pages Manager (Coming Soon)</h2></div>
-        <div id="section-gallery-mgr" class="admin-section"><h2>Photo Gallery (Coming Soon)</h2></div>
-        <div id="section-reviews-mgr" class="admin-section"><h2>Reviews Manager (Coming Soon)</h2></div>
-        <div id="section-global-settings" class="admin-section"><h2>Global Settings (Coming Soon)</h2></div>
-        <div id="section-email-settings" class="admin-section"><h2>Email/WhatsApp API (Coming Soon)</h2></div>
+        <div id="section-notice-mgr" class="admin-section"><h2>Notice Board (Coming Soon)</h2></div>
 
     </div>
 
     <script>
-        // Toggle Sidebar (Close / Open)
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('closed');
             document.getElementById('mainContent').classList.toggle('full-width');
         }
 
-        // Show Selected Section
         function showSection(sectionId, element = null) {
-            // Hide all sections
             document.querySelectorAll('.admin-section').forEach(el => el.classList.remove('active'));
-            
-            // Remove active class from all menu items
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
 
-            // Show selected section
-            const targetSection = document.getElementById('section-' + sectionId);
-            if(targetSection) targetSection.classList.add('active');
-            
-            // Highlight menu item
+            document.getElementById('section-' + sectionId).classList.add('active');
             if(element) element.classList.add('active');
-            else {
-                // If called from Quick Actions, manually highlight menu
-                document.querySelectorAll('.nav-item').forEach(el => {
-                    if(el.getAttribute('onclick').includes(sectionId)) el.classList.add('active');
-                });
-            }
 
-            // Update Page Title
             const titles = {
                 'dashboard': 'Dashboard Overview',
                 'live-tests': 'Manage Live Tests',
-                'archive-tests': 'Test Archive',
-                'test-schedule': 'Test Schedule',
+                'archive-tests': 'Archived Tests',
                 'coachings': 'Manage Coachings',
                 'students': 'Manage Students',
                 'payments': 'Payments & Billing',
                 'coupons': 'Manage Coupons',
+                'student-dashboard-mgr': 'Candidate Dashboard Settings',
                 'header-mgr': 'Header Manager',
                 'footer-mgr': 'Footer Manager',
                 'social-mgr': 'Social Media Links',
-                'notice-mgr': 'Notice Board Manager',
-                'pages-mgr': 'Pages Manager',
-                'gallery-mgr': 'Photo Gallery',
-                'reviews-mgr': 'Reviews Manager',
-                'global-settings': 'Global Settings',
-                'email-settings': 'Email/WhatsApp API'
+                'notice-mgr': 'Notice Board Manager'
             };
             document.getElementById('pageTitle').innerText = titles[sectionId] || 'Admin Panel';
 
-            // On mobile, close sidebar after selection
             if(window.innerWidth <= 768) {
                 document.getElementById('sidebar').classList.remove('open');
             }
         }
 
-        function logout() {
-            alert("Logging out...");
-            window.location.href = "index.html";
-        }
-
-        // Handle mobile sidebar open
-        function openMobileSidebar() {
-            document.getElementById('sidebar').classList.add('open');
+        // Dynamic Timer Settings Form Logic
+        function toggleTimerSettings() {
+            const type = document.getElementById('timerTypeSelect').value;
+            document.getElementById('overallTimerBox').style.display = (type === 'overall') ? 'block' : 'none';
+            document.getElementById('questionTimerBox').style.display = (type === 'question-wise') ? 'block' : 'none';
+            document.getElementById('sectionalTimerBox').style.display = (type === 'sectional') ? 'block' : 'none';
         }
     </script>
 </body>
