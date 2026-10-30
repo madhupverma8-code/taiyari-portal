@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration - Taiyari Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #f4f7f6; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        
+        .form-container {
+            background: white; width: 100%; max-width: 600px;
+            border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .form-header { background: #10b981; color: white; padding: 20px; text-align: center; }
+        .form-header h2 { font-size: 22px; margin-bottom: 5px; }
+        .form-header p { font-size: 13px; color: #d1fae5; }
+
+        .progress-bar {
+            display: flex; justify-content: space-between; padding: 15px 40px;
+            background: #f8fafc; border-bottom: 1px solid #e2e8f0;
+        }
+        .step { font-size: 12px; font-weight: 600; color: #94a3b8; position: relative; }
+        .step.active { color: #10b981; }
+        .step.active::after { content: ''; position: absolute; bottom: -16px; left: 0; width: 100%; height: 3px; background: #10b981; }
+
+        .form-body { padding: 30px; }
+        .form-step { display: none; }
+        .form-step.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #4b5563; }
+        .input-group input, .input-group select {
+            width: 100%; padding: 12px 15px; border: 1px solid #cbd5e1;
+            border-radius: 8px; font-size: 14px; outline: none; transition: 0.3s;
+        }
+        .input-group input:focus, .input-group select:focus { border-color: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
+
+        .btn-group { display: flex; gap: 15px; margin-top: 30px; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.3s; text-align: center; }
+        .btn-next { background: #10b981; color: white; } .btn-next:hover { background: #059669; }
+        .btn-prev { background: #e2e8f0; color: #475569; } .btn-prev:hover { background: #cbd5e1; }
+        .btn-pay { background: #f59e0b; color: white; font-size: 16px;} .btn-pay:hover { background: #d97706; }
+        
+        /* OTP Box */
+        .otp-box { display: none; text-align: center; }
+        .otp-box input { width: 200px; text-align: center; font-size: 24px; letter-spacing: 5px; margin: 20px auto; display: block; }
+        
+        /* Payment Summary */
+        .payment-summary {
+            background: #fffbeb; border: 1px solid #f59e0b; padding: 20px;
+            border-radius: 10px; margin-bottom: 20px; text-align: center;
+        }
+        .payment-summary h3 { color: #b45309; font-size: 18px; margin-bottom: 10px; }
+        .payment-summary .price { font-size: 28px; font-weight: 700; color: #b45309; margin-bottom: 5px; }
+        .payment-summary p { font-size: 13px; color: #92400e; }
+
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <div class="form-header">
+            <h2>Student Registration</h2>
+            <p>Join Taiyari Portal to start your preparation</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="step active" id="step1Indicator">1. Basic Details</div>
+            <div class="step" id="step2Indicator">2. Exam & Location</div>
+            <div class="step" id="step3Indicator">3. Payment</div>
+        </div>
+
+        <div class="form-body">
+            <!-- STEP 1: Basic Details & OTP -->
+            <div class="form-step active" id="step1">
+                <div id="basicDetailsForm">
+                    <div class="input-group"><label>Full Name (पूरा नाम)</label><input type="text" id="studentName" placeholder="Enter your full name"></div>
+                    <div class="input-group"><label>Mobile Number (मोबाइल नंबर)</label><input type="tel" id="studentMobile" placeholder="10-digit mobile number" maxlength="10"></div>
+                    <div class="input-group"><label>Email ID (ईमेल आईडी)</label><input type="email" id="studentEmail" placeholder="Enter your email address"></div>
+                    <div class="input-group"><label>Create Password (पासवर्ड बनाएं)</label><input type="password" id="studentPassword" placeholder="Create a strong password"></div>
+                    <div class="btn-group"><button class="btn btn-next" onclick="sendOTP()">Send OTP & Next →</button></div>
+                </div>
+                
+                <!-- OTP Section (Hidden initially) -->
+                <div class="otp-box" id="otpSection">
+                    <p style="color: #4b5563; font-size: 14px;">We have sent an OTP to your email.</p>
+                    <input type="text" id="emailOTP" maxlength="6" placeholder="------">
+                    <div class="btn-group">
+                        <button class="btn btn-prev" onclick="cancelOTP()">← Edit Email</button>
+                        <button class="btn btn-next" onclick="verifyOTP()">Verify & Next →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: Location & Exam -->
+            <div class="form-step" id="step2">
+                <div class="input-group">
+                    <label>State (राज्य)</label>
+                    <select id="stateDropdown" onchange="populateDistricts()"><option value="">Select State</option></select>
+                </div>
+                <div class="input-group">
+                    <label>District (जिला)</label>
+                    <select id="districtDropdown"><option value="">Select District</option></select>
+                </div>
+                <div class="input-group">
+                    <label>Target Exam (किस एग्जाम की तैयारी कर रहे हैं?)</label>
+                    <select id="targetExam">
+                        <option value="">Select Exam</option>
+                        <option value="SSC CGL">SSC CGL</option>
+                        <option value="SSC CHSL">SSC CHSL</option>
+                        <option value="Railway Group D">Railway Group D</option>
+                        <option value="Bank PO">Bank PO</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Coaching/Library Name (यदि किसी कोचिंग से हैं - Optional)</label>
+                    <input type="text" id="instituteName" placeholder="e.g., ABC Coaching / Gyan Library">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-prev" onclick="nextStep(1)">← Back</button>
+                    <button class="btn btn-next" onclick="nextStep(3)">Next Step →</button>
+                </div>
+            </div>
+
+            <!-- STEP 3: Payment -->
+            <div class="form-step" id="step3">
+                <div class="payment-summary">
+                    <h3>Premium Subscription Plan</h3>
+                    <div class="price">₹149 <span style="font-size: 14px; text-decoration: line-through; color: #9ca3af;">₹199</span></div>
+                    <p>1 Month Access to All Live Tests</p>
+                </div>
+
+                <div class="input-group">
+                    <label>Have a Coupon Code? (कूपन कोड है?)</label>
+                    <input type="text" id="couponCode" placeholder="Enter code (e.g., LIB99)">
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn btn-prev" onclick="nextStep(2)">← Back</button>
+                    <!-- PAYMENT INTEGRATION POINT -->
+                    <button class="btn btn-pay" onclick="makePayment()">Pay ₹149 & Register</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK & Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyArgULcCrtX6Cax4m0T7lXQuuTGc64d2AE",
+            authDomain: "taiyari-portal.firebaseapp.com",
+            projectId: "taiyari-portal",
+            storageBucket: "taiyari-portal.firebasestorage.app",
+            messagingSenderId: "130787040569",
+            appId: "1:130787040569:web:8b0a40aa8d836cadd7dce8"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Location Data (Shortened for brevity, will add full list later)
+        const locationData = {
+            "Uttar Pradesh": ["Lucknow", "Kanpur", "Lakhimpur", "Sitapur"],
+            "Bihar": ["Patna", "Gaya", "Muzaffarpur"],
+            "Delhi": ["New Delhi", "Central Delhi"]
+        };
+
+        const stateDropdown = document.getElementById('stateDropdown');
+        for (let state in locationData) {
+            let option = document.createElement("option");
+            option.value = state; option.text = state; stateDropdown.add(option);
+        }
+
+        window.populateDistricts = function() {
+            const selectedState = stateDropdown.value;
+            const districtDropdown = document.getElementById('districtDropdown');
+            districtDropdown.innerHTML = '<option value="">Select District</option>';
+            if (selectedState && locationData[selectedState]) {
+                locationData[selectedState].forEach(district => {
+                    let option = document.createElement("option");
+                    option.value = district; option.text = district; districtDropdown.add(option);
+                });
+            }
+        }
+
+        // --- STEP NAVIGATION & OTP LOGIC ---
+        window.sendOTP = function() {
+            const name = document.getElementById('studentName').value;
+            const email = document.getElementById('studentEmail').value;
+            const pass = document.getElementById('studentPassword').value;
+            
+            if(!name || !email || !pass) { alert("Please fill all details."); return; }
+            
+            // Yahan Firebase Auth ka Email OTP trigger karna hai
+            // Future code: auth.sendSignInLinkToEmail() ya auth.signInWithEmailLink()
+            
+            document.getElementById('basicDetailsForm').style.display = 'none';
+            document.getElementById('otpSection').style.display = 'block';
+        }
+
+        window.cancelOTP = function() {
+            document.getElementById('basicDetailsForm').style.display = 'block';
+            document.getElementById('otpSection').style.display = 'none';
+        }
+
+        window.verifyOTP = function() {
+            const otp = document.getElementById('emailOTP').value;
+            if(otp.length !== 6) { alert("Please enter 6-digit OTP"); return; }
+            
+            // Future code: Verify OTP here
+            alert("Email Verified Successfully!");
+            nextStep(2);
+        }
+
+        window.nextStep = function(step) {
+            if(step === 3) {
+                if(!document.getElementById('stateDropdown').value || !document.getElementById('targetExam').value) { 
+                    alert("Please select State and Target Exam."); return; 
+                }
+            }
+            document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+            document.getElementById('step' + step + 'Indicator').classList.add('active');
+        }
+
+        // --- PAYMENT INTEGRATION POINT (RAZORPAY) ---
+        window.makePayment = async function() {
+            const coupon = document.getElementById('couponCode').value;
+            let amountToPay = 14900; // in paise (149 INR)
+            
+            if(coupon === "LIB99" || coupon === "FREE100") {
+                // Yahan Admin panel se check hoga ki coupon valid hai ya nahi
+                amountToPay = 0; 
+            }
+
+            if(amountToPay === 0) {
+                // Skip payment, direct register
+                finalizeRegistration();
+            } else {
+                // Razorpay Trigger
+                alert("Razorpay Checkout will open here for ₹149.");
+                // Fake successful payment for now
+                finalizeRegistration(); 
+            }
+        }
+
+        async function finalizeRegistration() {
+            const studentData = {
+                name: document.getElementById('studentName').value,
+                mobile: document.getElementById('studentMobile').value,
+                email: document.getElementById('studentEmail').value,
+                state: document.getElementById('stateDropdown').value,
+                district: document.getElementById('districtDropdown').value,
+                targetExam: document.getElementById('targetExam').value,
+                instituteName: document.getElementById('instituteName').value,
+                status: "Active",
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                await addDoc(collection(db, "students"), studentData);
+                alert("Registration Successful! Login details sent to your email.");
+                window.location.href = "student-login.html"; 
+            } catch (error) {
+                alert("Error: " + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
