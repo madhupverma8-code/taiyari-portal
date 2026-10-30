@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Test - Taiyari Portal</title>
+    <title>Test Interface - Taiyari Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; user-select: none; /* Disables text selection */ }
+        /* CSS में user-select: none; चालू है, लेकिन प्रैक्टिस टेस्ट में हम इसे JS से हटा देंगे */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background-color: #f4f7f6; color: #333; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
         /* --- 1. HEADER --- */
@@ -21,6 +22,14 @@
             background: #1e293b; padding: 8px 20px; border-radius: 8px;
             font-size: 20px; font-weight: 700; color: #fbbf24;
             display: flex; align-items: center; gap: 10px; border: 1px solid #334155;
+        }
+        
+        /* Section Timer Box (Top) */
+        .section-timer-box {
+            display: none; 
+            background: #1e3a8a; color: white; padding: 10px;
+            text-align: center; font-size: 16px; font-weight: 600;
+            border-bottom: 2px solid #3b82f6;
         }
 
         /* --- 2. MAIN BODY --- */
@@ -36,8 +45,12 @@
 
         .q-content { flex: 1; padding: 25px; overflow-y: auto; font-size: 16px; line-height: 1.6; color: #1f2937; }
         
+        /* Question-wise Timer */
+        .q-timer { display: none; color: #ef4444; font-weight: 700; font-size: 14px; margin-bottom: 10px; }
+        .q-timer i { margin-right: 5px; }
+
         /* Options */
-        .options-list { margin-top: 25px; display: flex; flex-direction: column; gap: 12px; }
+        .options-list { margin-top: 15px; display: flex; flex-direction: column; gap: 12px; }
         .option-item {
             display: flex; align-items: center; padding: 12px 15px;
             border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;
@@ -101,12 +114,17 @@
     <!-- HEADER -->
     <div class="test-header">
         <div class="exam-name">
-            <i class="fa-solid fa-building-columns"></i> ABC Coaching | SSC CGL Mock 1
+            <i class="fa-solid fa-building-columns"></i> <span id="testNameDisplay">Loading...</span>
         </div>
         <div class="timer-box">
             <i class="fa-solid fa-clock"></i>
-            <span id="timerDisplay">01:30:00</span>
+            <span id="globalTimerDisplay">00:00:00</span>
         </div>
+    </div>
+
+    <!-- SECTIONAL TIMER -->
+    <div class="section-timer-box" id="sectionTimerBox">
+        Current Section: <span id="currentSectionName">Reasoning</span> | Time Left: <span id="sectionTimerDisplay">00:15:00</span>
     </div>
 
     <!-- MAIN BODY -->
@@ -116,18 +134,13 @@
         <div class="question-area">
             <div class="q-top-bar">
                 <div class="q-number">Question No. <span id="qIndex">1</span></div>
-                <div class="q-marks">+1.0 <span class="neg">-0.25</span></div>
+                <div class="q-marks" id="qMarksBox">+1.0 <span class="neg">-0.25</span></div>
             </div>
             
             <div class="q-content">
-                <div id="questionText">
-                    <!-- Question will load here -->
-                    Loading question...
-                </div>
-                
-                <div class="options-list" id="optionsContainer">
-                    <!-- Options will load here -->
-                </div>
+                <div class="q-timer" id="qTimerDisplay"><i class="fa-solid fa-hourglass-half"></i> Time left: <span id="qTime">30</span>s</div>
+                <div id="questionText">Loading question...</div>
+                <div class="options-list" id="optionsContainer"></div>
             </div>
             
             <div class="q-bottom-bar">
@@ -145,10 +158,10 @@
         <!-- RIGHT: Palette -->
         <div class="palette-area">
             <div class="palette-header">
-                <div class="palette-avatar">R</div>
+                <div class="palette-avatar" id="stuAvatar">R</div>
                 <div class="palette-info">
-                    <h4>Rahul Kumar</h4>
-                    <span>TG-1001</span>
+                    <h4 id="stuName">Rahul Kumar</h4>
+                    <span id="stuId">TG-1001</span>
                 </div>
             </div>
             
@@ -159,9 +172,7 @@
                 <div class="legend-item"><div class="box not-visited"></div> Not Visited</div>
             </div>
             
-            <div class="palette-grid" id="paletteContainer">
-                <!-- Palette buttons 1 to 100 -->
-            </div>
+            <div class="palette-grid" id="paletteContainer"></div>
             
             <div class="palette-footer">
                 <button class="btn btn-submit" onclick="submitTest()">Submit Test</button>
@@ -170,62 +181,148 @@
 
     </div>
 
-    <!-- JAVASCRIPT LOGIC (Anti-Cheat, Timer, Navigation) -->
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        // --- DUMMY DATA ---
-        const totalQuestions = 100;
+        // ==========================================
+        // 🚨 MAIN SETTING: IS THIS A LIVE TEST OR PRACTICE?
+        // ==========================================
+        // Agar Live Test hai toh 'true' rakhein (Cheating band ho jayegi)
+        // Agar Practice/Missed Test hai toh 'false' rakhein (Bachha aaram se de sakta hai)
+        const isLiveTest = true; 
+
+        // --- TEST CONFIGURATION ---
+        const testConfig = {
+            name: "SSC CGL Mock 1",
+            totalQuestions: 100,
+            totalTimeMinutes: 90,
+            timerType: "overall", // Options: "overall", "sectional", "question-wise"
+            sections: [
+                { name: "Reasoning", startQ: 1, endQ: 25, timeMinutes: 15 },
+                { name: "General Awareness", startQ: 26, endQ: 50, timeMinutes: 15 },
+                { name: "Quantitative Aptitude", startQ: 51, endQ: 75, timeMinutes: 15 },
+                { name: "English", startQ: 76, endQ: 100, timeMinutes: 15 }
+            ],
+            questionTimeSeconds: 30
+        };
+
+        // --- STATE VARIABLES ---
         let currentQuestionIndex = 0;
-        let answers = {}; // Store selected options
+        let answers = {}; 
         let markedForReview = {};
         let visited = {};
-        let timeLeft = 90 * 60; // 90 minutes in seconds
-        let timerInterval;
+        
+        // Timers
+        let globalTimeLeft = testConfig.totalTimeMinutes * 60;
+        let sectionTimeLeft = 0;
+        let qTimeLeft = 0;
+        let globalTimerInterval, sectionTimerInterval, qTimerInterval;
 
-        const dummyQuestions = [
-            { q: "Who is known as the Father of the Indian Constitution?", opts: ["Mahatma Gandhi", "Dr. B.R. Ambedkar", "Jawaharlal Nehru", "Sardar Patel"] },
-            { q: "Which is the largest planet in our solar system?", opts: ["Earth", "Mars", "Jupiter", "Saturn"] }
-            // Baaki questions hum Firebase se load karenge
-        ];
+        // --- 🛡️ ANTI-CHEAT LOGIC (Only if isLiveTest is true) ---
+        function enableAntiCheat() {
+            // 1. Disable Right Click
+            document.addEventListener('contextmenu', e => e.preventDefault());
+            // 2. Disable Copy/Paste
+            document.addEventListener('copy', e => e.preventDefault());
+            document.addEventListener('paste', e => e.preventDefault());
+            // 3. Disable text selection using CSS
+            document.body.style.userSelect = "none";
+            
+            // 4. Tab Switching Detection
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    alert("⚠️ WARNING: Tab switching is not allowed. Your test will submit if you do it again!");
+                    // Future logic: 2nd time violation par submitTest() call karein
+                }
+            });
+        }
 
-        // --- ANTI-CHEAT LOGIC ---
-        // 1. Disable Right Click
-        document.addEventListener('contextmenu', event => event.preventDefault());
+        // --- INITIALIZATION ---
+        function initTest() {
+            document.getElementById('testNameDisplay').innerText = testConfig.name;
 
-        // 2. Disable Copy/Paste
-        document.addEventListener('copy', event => event.preventDefault());
-        document.addEventListener('paste', event => event.preventDefault());
-
-        // 3. Fullscreen & Tab Switching Detection
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                alert("⚠️ WARNING: Do not switch tabs or minimize the window. Your test will be submitted automatically if you do this again!");
-                // Logic: 2nd time violation par submitTest() call karein
+            // Apply anti-cheat if it's a live test
+            if(isLiveTest) {
+                enableAntiCheat();
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen(); // Force Full Screen
+                }
             }
-        });
 
-        // --- TIMER LOGIC ---
-        function startTimer() {
-            const display = document.getElementById('timerDisplay');
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                const h = Math.floor(timeLeft / 3600);
-                const m = Math.floor((timeLeft % 3600) / 60);
-                const s = timeLeft % 60;
-                display.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            startGlobalTimer();
+
+            if(testConfig.timerType === 'sectional') {
+                document.getElementById('sectionTimerBox').style.display = 'block';
+                startSectionTimer(0);
+            }
+
+            loadQuestion(0);
+        }
+
+        // --- TIMER FUNCTIONS ---
+        function formatTime(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = seconds % 60;
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function startGlobalTimer() {
+            document.getElementById('globalTimerDisplay').innerText = formatTime(globalTimeLeft);
+            globalTimerInterval = setInterval(() => {
+                globalTimeLeft--;
+                document.getElementById('globalTimerDisplay').innerText = formatTime(globalTimeLeft);
+                if (globalTimeLeft <= 0) endTest("Global Time Up!");
+            }, 1000);
+        }
+
+        function startSectionTimer(sectionIndex) {
+            clearInterval(sectionTimerInterval);
+            const section = testConfig.sections[sectionIndex];
+            document.getElementById('currentSectionName').innerText = section.name;
+            sectionTimeLeft = section.timeMinutes * 60;
+            document.getElementById('sectionTimerDisplay').innerText = formatTime(sectionTimeLeft);
+
+            sectionTimerInterval = setInterval(() => {
+                sectionTimeLeft--;
+                document.getElementById('sectionTimerDisplay').innerText = formatTime(sectionTimeLeft);
                 
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    alert("Time Up! Submitting your test.");
-                    submitTest();
+                if (sectionTimeLeft <= 0) {
+                    clearInterval(sectionTimerInterval);
+                    alert(`Time up for ${section.name}! Moving to next section.`);
+                    if(sectionIndex < testConfig.sections.length - 1) {
+                        loadQuestion(section.endQ); // Jump to next section
+                    } else {
+                        endTest("All Sections Time Up!");
+                    }
+                }
+            }, 1000);
+        }
+
+        function startQuestionTimer() {
+            clearInterval(qTimerInterval);
+            document.getElementById('qTimerDisplay').style.display = 'block';
+            qTimeLeft = testConfig.questionTimeSeconds;
+
+            qTimerInterval = setInterval(() => {
+                qTimeLeft--;
+                document.getElementById('qTime').innerText = qTimeLeft;
+                if (qTimeLeft <= 0) {
+                    clearInterval(qTimerInterval);
+                    nextQuestion(); // Auto move
                 }
             }, 1000);
         }
 
         // --- UI RENDER LOGIC ---
+        const dummyQuestions = [
+            { q: "Who is known as the Father of the Indian Constitution?", opts: ["Mahatma Gandhi", "Dr. B.R. Ambedkar", "Jawaharlal Nehru", "Sardar Patel"] },
+            { q: "Which is the largest planet in our solar system?", opts: ["Earth", "Mars", "Jupiter", "Saturn"] }
+        ];
+
         function renderPalette() {
             const container = document.getElementById('paletteContainer');
             container.innerHTML = '';
-            for (let i = 0; i < totalQuestions; i++) {
+            for (let i = 0; i < testConfig.totalQuestions; i++) {
                 const btn = document.createElement('button');
                 btn.className = 'pallet-btn';
                 btn.innerText = i + 1;
@@ -245,8 +342,18 @@
             visited[index] = true;
             document.getElementById('qIndex').innerText = index + 1;
             
+            if(testConfig.timerType === 'sectional') {
+                const currentSectionIndex = testConfig.sections.findIndex(s => index + 1 >= s.startQ && index + 1 <= s.endQ);
+                if(currentSectionIndex !== -1 && document.getElementById('currentSectionName').innerText !== testConfig.sections[currentSectionIndex].name) {
+                    startSectionTimer(currentSectionIndex);
+                }
+            }
+
+            if(testConfig.timerType === 'question-wise') {
+                startQuestionTimer();
+            }
+
             const qData = dummyQuestions[index] || { q: "Question " + (index + 1) + " text will load from database...", opts: ["Option A", "Option B", "Option C", "Option D"] };
-            
             document.getElementById('questionText').innerText = qData.q;
             
             const optionsContainer = document.getElementById('optionsContainer');
@@ -266,6 +373,7 @@
             renderPalette();
         }
 
+        // Expose functions to window for HTML onclick
         window.selectOption = function(optIndex) {
             answers[currentQuestionIndex] = optIndex;
             renderPalette();
@@ -282,30 +390,34 @@
         }
 
         window.nextQuestion = function() {
-            if (currentQuestionIndex < totalQuestions - 1) loadQuestion(currentQuestionIndex + 1);
+            if (currentQuestionIndex < testConfig.totalQuestions - 1) loadQuestion(currentQuestionIndex + 1);
         }
 
         window.prevQuestion = function() {
             if (currentQuestionIndex > 0) loadQuestion(currentQuestionIndex - 1);
         }
 
+        function endTest(reason) {
+            clearInterval(globalTimerInterval);
+            clearInterval(sectionTimerInterval);
+            clearInterval(qTimerInterval);
+            
+            if (document.fullscreenElement) {
+                document.exitFullscreen(); // Exit fullscreen on end
+            }
+            
+            alert(`Test Ended: ${reason}\nRedirecting to dashboard...`);
+            window.location.href = "student-dashboard.html";
+        }
+
         window.submitTest = function() {
             if(confirm("Are you sure you want to submit the test?")) {
-                clearInterval(timerInterval);
-                alert("Test Submitted Successfully! Result will be sent to your email.");
-                window.location.href = "student-dashboard.html";
+                endTest("Submitted by user");
             }
         }
 
-        // --- INITIALIZE ---
-        window.onload = () => {
-            // Request Fullscreen on start
-            if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen();
-            }
-            startTimer();
-            loadQuestion(0);
-        }
+        // Start
+        window.onload = initTest;
     </script>
 </body>
 </html>
