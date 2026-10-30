@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coaching Login - Taiyari Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        
+        .login-container {
+            background: white; width: 100%; max-width: 400px;
+            border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .login-header { background: #1e3a8a; color: white; padding: 30px 20px; text-align: center; }
+        .login-header h2 { font-size: 24px; margin-bottom: 5px; }
+        .login-header p { font-size: 13px; color: #bfdbfe; }
+
+        .login-body { padding: 30px; }
+
+        .input-group { margin-bottom: 20px; position: relative; }
+        .input-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #4b5563; }
+        .input-group input {
+            width: 100%; padding: 12px 15px 12px 40px; border: 1px solid #cbd5e1;
+            border-radius: 8px; font-size: 14px; outline: none; transition: 0.3s;
+        }
+        .input-group i { position: absolute; left: 15px; top: 40px; color: #94a3b8; font-size: 16px; }
+        
+        .input-group input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+
+        .btn-login {
+            width: 100%; background: #2563eb; color: white; border: none;
+            padding: 12px; border-radius: 8px; font-size: 16px; font-weight: 600;
+            cursor: pointer; transition: 0.3s; margin-top: 10px;
+        }
+        .btn-login:hover { background: #1d4ed8; }
+
+        .links { display: flex; justify-content: space-between; margin-top: 15px; font-size: 13px; }
+        .links a { color: #2563eb; text-decoration: none; font-weight: 600; }
+        .links a:hover { text-decoration: underline; }
+
+        .back-home { text-align: center; margin-top: 25px; font-size: 13px; }
+        .back-home a { color: #64748b; text-decoration: none; }
+        .back-home a:hover { color: #1e3a8a; }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="login-header">
+            <h2><i class="fa-solid fa-building"></i> Coaching Login</h2>
+            <p>Access your coaching dashboard</p>
+        </div>
+
+        <div class="login-body">
+            <div class="input-group">
+                <label>Login ID or Email</label>
+                <i class="fa-solid fa-envelope"></i>
+                <input type="text" id="coachingId" placeholder="Enter your ID or Email">
+            </div>
+            
+            <div class="input-group">
+                <label>Password</label>
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" id="coachingPassword" placeholder="Enter your password">
+            </div>
+
+            <!-- LOGIN LOGIC WILL BE ADDED HERE -->
+            <button class="btn-login" onclick="loginCoaching()">Login to Dashboard</button>
+
+            <div class="links">
+                <a href="#">Forgot Password?</a>
+                <a href="coaching-register.html">New Registration</a>
+            </div>
+
+            <div class="back-home">
+                <a href="index.html">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (Placeholder for Auth) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyArgULcCrtX6Cax4m0T7lXQuuTGc64d2AE",
+            authDomain: "taiyari-portal.firebaseapp.com",
+            projectId: "taiyari-portal",
+            storageBucket: "taiyari-portal.firebasestorage.app",
+            messagingSenderId: "130787040569",
+            appId: "1:130787040569:web:8b0a40aa8d836cadd7dce8"
+        };
+        const app = initializeApp(firebaseConfig);
+
+        window.loginCoaching = function() {
+            const id = document.getElementById('coachingId').value;
+            const pass = document.getElementById('coachingPassword').value;
+
+            if(!id || !pass) {
+                alert("Please enter Login ID and Password.");
+                return;
+            }
+
+            // Future: Firebase Authentication check
+            alert("Login Successful! Redirecting to Coaching Dashboard...");
+            window.location.href = "coaching-dashboard.html";
+        }
+    </script>
+</body>
+</html>
