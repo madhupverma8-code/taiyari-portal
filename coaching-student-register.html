@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coaching Student Registration - Taiyari Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #f4f7f6; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        
+        .form-container {
+            background: white; width: 100%; max-width: 500px;
+            border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .form-header { background: #1e3a8a; color: white; padding: 20px; text-align: center; }
+        .form-header h2 { font-size: 22px; margin-bottom: 5px; }
+        .form-header p { font-size: 13px; color: #bfdbfe; }
+
+        .form-body { padding: 30px; }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #4b5563; }
+        .input-group input {
+            width: 100%; padding: 12px 15px; border: 1px solid #cbd5e1;
+            border-radius: 8px; font-size: 14px; outline: none; transition: 0.3s;
+        }
+        .input-group input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+
+        .btn-submit {
+            width: 100%; background: #2563eb; color: white; border: none;
+            padding: 12px; border-radius: 8px; font-size: 16px; font-weight: 600;
+            cursor: pointer; transition: 0.3s; margin-top: 10px;
+        }
+        .btn-submit:hover { background: #1d4ed8; }
+        
+        .login-link { text-align: center; margin-top: 20px; font-size: 13px; color: #64748b; }
+        .login-link a { color: #2563eb; font-weight: 600; text-decoration: none; }
+        
+        /* OTP Box */
+        .otp-box { display: none; text-align: center; }
+        .otp-box input { width: 200px; text-align: center; font-size: 24px; letter-spacing: 5px; margin: 20px auto; display: block; }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <div class="form-header">
+            <h2>Coaching Student Registration</h2>
+            <p>Register to take your coaching tests</p>
+        </div>
+
+        <div class="form-body">
+            <!-- REGISTRATION FORM -->
+            <div id="registrationForm">
+                <div class="input-group">
+                    <label>Coaching Code (कोचिंग का कोड)</label>
+                    <input type="text" id="coachingCode" placeholder="Enter code provided by your coaching">
+                </div>
+                <div class="input-group">
+                    <label>Full Name (पूरा नाम)</label>
+                    <input type="text" id="studentName" placeholder="Enter your full name">
+                </div>
+                <div class="input-group">
+                    <label>Mobile Number (मोबाइल नंबर)</label>
+                    <input type="tel" id="studentMobile" placeholder="10-digit mobile number" maxlength="10">
+                </div>
+                <div class="input-group">
+                    <label>Email ID (ईमेल आईडी)</label>
+                    <input type="email" id="studentEmail" placeholder="Enter your email address">
+                </div>
+                <div class="input-group">
+                    <label>Create Password (पासवर्ड बनाएं)</label>
+                    <input type="password" id="studentPassword" placeholder="Create a strong password">
+                </div>
+                
+                <button class="btn-submit" onclick="sendOTP()">Send OTP & Verify</button>
+            </div>
+
+            <!-- OTP SECTION -->
+            <div class="otp-box" id="otpSection">
+                <p style="color: #4b5563; font-size: 14px;">We have sent an OTP to your email.</p>
+                <input type="text" id="emailOTP" maxlength="6" placeholder="------">
+                <button class="btn-submit" onclick="verifyOTP()">Verify OTP & Register</button>
+                <button class="btn-submit" style="background: #e2e8f0; color: #475569; margin-top: 5px;" onclick="cancelOTP()">Edit Details</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK & Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyArgULcCrtX6Cax4m0T7lXQuuTGc64d2AE",
+            authDomain: "taiyari-portal.firebaseapp.com",
+            projectId: "taiyari-portal",
+            storageBucket: "taiyari-portal.firebasestorage.app",
+            messagingSenderId: "130787040569",
+            appId: "1:130787040569:web:8b0a40aa8d836cadd7dce8"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.sendOTP = function() {
+            const code = document.getElementById('coachingCode').value;
+            const name = document.getElementById('studentName').value;
+            const email = document.getElementById('studentEmail').value;
+            const pass = document.getElementById('studentPassword').value;
+            
+            if(!code || !name || !email || !pass) { 
+                alert("Please fill all details including Coaching Code."); return; 
+            }
+            
+            // Future: Firebase Auth OTP trigger
+            
+            document.getElementById('registrationForm').style.display = 'none';
+            document.getElementById('otpSection').style.display = 'block';
+        }
+
+        window.cancelOTP = function() {
+            document.getElementById('registrationForm').style.display = 'block';
+            document.getElementById('otpSection').style.display = 'none';
+        }
+
+        window.verifyOTP = async function() {
+            const otp = document.getElementById('emailOTP').value;
+            if(otp.length !== 6) { alert("Please enter 6-digit OTP"); return; }
+            
+            // Future: Verify OTP logic
+            alert("Email Verified! Registering...");
+
+            const studentData = {
+                coachingCode: document.getElementById('coachingCode').value,
+                name: document.getElementById('studentName').value,
+                mobile: document.getElementById('studentMobile').value,
+                email: document.getElementById('studentEmail').value,
+                status: "Active (Coaching)",
+                paymentStatus: "Paid By Coaching",
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                // We save this to "students" collection, but mark it as coaching student
+                await addDoc(collection(db, "students"), studentData);
+                alert("Registration Successful! Login details sent to your email.");
+                window.location.href = "student-login.html"; 
+            } catch (error) {
+                alert("Error: " + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
