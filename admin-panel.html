@@ -94,6 +94,7 @@
             <div class="menu-category">Test Management</div>
             <a class="nav-item" onclick="showSection('manage-tests', this)"><i class="fa-solid fa-file-pen"></i> Manage Live Tests</a>
             <a class="nav-item" onclick="showSection('bulk-upload', this)"><i class="fa-solid fa-upload"></i> Bulk Question Upload</a>
+            <a class="nav-item" onclick="showSection('single-upload', this)"><i class="fa-solid fa-plus"></i> Single Question Upload</a>
             <a class="nav-item" onclick="showSection('archive-tests', this)"><i class="fa-solid fa-box-archive"></i> Archived Tests</a>
 
             <div class="menu-category">Job & Careers</div>
@@ -144,9 +145,9 @@
                 <div class="form-group">
                     <label>Timer Type</label>
                     <select id="timerTypeSelect" onchange="toggleTimerSettings()">
-                        <option value="overall">Overall Timer (e.g., Railway)</option>
-                        <option value="sectional">Sectional Timer (e.g., SSC)</option>
-                        <option value="question-wise">Question-wise Timer (e.g., Bank)</option>
+                        <option value="overall">Overall Timer</option>
+                        <option value="sectional">Sectional Timer</option>
+                        <option value="question-wise">Question-wise Timer</option>
                     </select>
                 </div>
                 <div id="overallTimerBox" class="form-group"><label>Total Time (Minutes)</label><input type="number" placeholder="e.g., 90"></div>
@@ -164,20 +165,46 @@
             </div>
         </div>
 
-        <!-- 3. BULK UPLOAD -->
+        <!-- 3. BULK UPLOAD (CSV) -->
         <div id="section-bulk-upload" class="admin-section">
             <div class="card">
-                <h3>Bulk Question Upload (CSV)</h3>
+                <h3>Bulk Question Upload (CSV Format)</h3>
+                <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">
+                    CSV में कॉलम इस तरह होने चाहिए: <br>
+                    <code>QuestionHindi, QuestionEnglish, OptA_Hindi, OptA_English, OptB_Hindi, OptB_English, OptC_Hindi, OptC_English, OptD_Hindi, OptD_English, CorrectAnswer, Explanation</code>
+                </p>
                 <div class="form-group">
                     <label>Select Test (where to add)</label>
                     <select><option>SSC CGL Mock 1</option><option>Railway Group D Mock 1</option></select>
                 </div>
                 <div class="form-group"><label>Upload CSV File</label><input type="file" accept=".csv"></div>
-                <button class="btn-primary" onclick="alert('CSV Uploaded Successfully!')">Upload Questions</button>
+                <button class="btn-primary" onclick="alert('CSV Uploaded Successfully! Unique IDs Generated.')">Upload & Process</button>
             </div>
         </div>
 
-        <!-- 4. ARCHIVE TESTS -->
+        <!-- 4. SINGLE UPLOAD -->
+        <div id="section-single-upload" class="admin-section">
+            <div class="card">
+                <h3>Add Single Question</h3>
+                <div class="form-group"><label>Question (Hindi)</label><input type="text" placeholder="हिंदी में सवाल"></div>
+                <div class="form-group"><label>Question (English)</label><input type="text" placeholder="Question in English"></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group"><label>Option A (Hindi)</label><input type="text"></div>
+                    <div class="form-group"><label>Option A (English)</label><input type="text"></div>
+                    <div class="form-group"><label>Option B (Hindi)</label><input type="text"></div>
+                    <div class="form-group"><label>Option B (English)</label><input type="text"></div>
+                    <div class="form-group"><label>Option C (Hindi)</label><input type="text"></div>
+                    <div class="form-group"><label>Option C (English)</label><input type="text"></div>
+                    <div class="form-group"><label>Option D (Hindi)</label><input type="text"></div>
+                    <div class="form-group"><label>Option D (English)</label><input type="text"></div>
+                </div>
+                <div class="form-group"><label>Correct Answer</label><select><option>A</option><option>B</option><option>C</option><option>D</option></select></div>
+                <div class="form-group"><label>Explanation</label><textarea rows="2"></textarea></div>
+                <button class="btn-save" onclick="alert('Question Added! Unique ID Generated.')">Save Question</button>
+            </div>
+        </div>
+
+        <!-- 5. ARCHIVE TESTS -->
         <div id="section-archive-tests" class="admin-section">
             <div class="card">
                 <h3>Archived (Past) Tests</h3>
@@ -188,7 +215,7 @@
             </div>
         </div>
 
-        <!-- 5. MANAGE JOB ALERTS -->
+        <!-- 6. MANAGE JOB ALERTS -->
         <div id="section-manage-jobs" class="admin-section">
             <div class="card">
                 <h3>Add New Government Job Alert</h3>
@@ -196,10 +223,7 @@
                 <div class="form-group">
                     <label>Category</label>
                     <select>
-                        <option>Online Form</option>
-                        <option>Exam Result</option>
-                        <option>Admit Card</option>
-                        <option>Answer Key</option>
+                        <option>Online Form</option><option>Exam Result</option><option>Admit Card</option><option>Answer Key</option>
                     </select>
                 </div>
                 <div class="form-group"><label>Last Date / Date</label><input type="date"></div>
@@ -208,7 +232,7 @@
             </div>
         </div>
 
-        <!-- 6. LMS SETTINGS -->
+        <!-- 7. LMS SETTINGS -->
         <div id="section-student-dashboard-mgr" class="admin-section">
             <div class="card">
                 <h3>Control Student LMS Dashboard</h3>
@@ -226,7 +250,7 @@
             </div>
         </div>
 
-        <!-- 7. HEADER MANAGER -->
+        <!-- 8. HEADER MANAGER -->
         <div id="section-header-mgr" class="admin-section">
             <div class="card">
                 <h3>Header Manager</h3>
@@ -236,7 +260,7 @@
             </div>
         </div>
 
-        <!-- 8. FOOTER MANAGER -->
+        <!-- 9. FOOTER MANAGER -->
         <div id="section-footer-mgr" class="admin-section">
             <div class="card">
                 <h3>Footer Manager</h3>
@@ -247,7 +271,7 @@
             </div>
         </div>
 
-        <!-- 9. NOTICE BOARD -->
+        <!-- 10. NOTICE BOARD -->
         <div id="section-notice-mgr" class="admin-section">
             <div class="card">
                 <h3>Notice Board (Ticker)</h3>
@@ -256,7 +280,7 @@
             </div>
         </div>
 
-        <!-- 10. SOCIAL MEDIA LINKS -->
+        <!-- 11. SOCIAL MEDIA LINKS -->
         <div id="section-social-mgr" class="admin-section">
             <div class="card">
                 <h3>Social Media Links</h3>
@@ -293,13 +317,14 @@
                 'dashboard': 'Dashboard Overview',
                 'manage-tests': 'Manage Live Tests',
                 'bulk-upload': 'Bulk Question Upload',
+                'single-upload': 'Single Question Upload',
                 'archive-tests': 'Archived Tests',
                 'manage-jobs': 'Manage Job Alerts',
                 'coachings': 'Manage Coachings',
                 'students': 'Manage Students',
                 'payments': 'Payments & Invoices',
                 'coupons': 'Manage Coupons',
-                'student-dashboard-mgr': 'Student LMS Settings',
+                'student-dashboard-mgr': 'LMS Settings',
                 'header-mgr': 'Header Manager',
                 'footer-mgr': 'Footer Manager',
                 'notice-mgr': 'Notice Board',
