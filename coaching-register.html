@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coaching Registration - Taiyari Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #f4f7f6; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        
+        .form-container {
+            background: white; width: 100%; max-width: 600px;
+            border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .form-header {
+            background: #1e3a8a; color: white; padding: 20px; text-align: center;
+        }
+        .form-header h2 { font-size: 22px; margin-bottom: 5px; }
+        .form-header p { font-size: 13px; color: #bfdbfe; }
+
+        .progress-bar {
+            display: flex; justify-content: space-between; padding: 15px 40px;
+            background: #f8fafc; border-bottom: 1px solid #e2e8f0;
+        }
+        .step { font-size: 12px; font-weight: 600; color: #94a3b8; position: relative; }
+        .step.active { color: #2563eb; }
+        .step.active::after { content: ''; position: absolute; bottom: -16px; left: 0; width: 100%; height: 3px; background: #2563eb; }
+
+        .form-body { padding: 30px; }
+
+        .form-step { display: none; }
+        .form-step.active { display: block; animation: fadeIn 0.5s; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #4b5563; }
+        .input-group input, .input-group select {
+            width: 100%; padding: 12px 15px; border: 1px solid #cbd5e1;
+            border-radius: 8px; font-size: 14px; outline: none; transition: 0.3s;
+        }
+        .input-group input:focus, .input-group select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+
+        .btn-group { display: flex; gap: 15px; margin-top: 30px; }
+        .btn {
+            flex: 1; padding: 12px; border: none; border-radius: 8px;
+            font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.3s; text-align: center;
+        }
+        .btn-next { background: #2563eb; color: white; }
+        .btn-next:hover { background: #1d4ed8; }
+        .btn-prev { background: #e2e8f0; color: #475569; }
+        .btn-prev:hover { background: #cbd5e1; }
+        .btn-submit { background: #10b981; color: white; }
+        .btn-submit:hover { background: #059669; }
+        
+        .login-link { text-align: center; margin-top: 20px; font-size: 13px; color: #64748b; }
+        .login-link a { color: #2563eb; font-weight: 600; text-decoration: none; }
+
+        #loading { text-align: center; display: none; color: #2563eb; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <div class="form-header">
+            <h2>Coaching Registration</h2>
+            <p>Register your institute to conduct live tests</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="step active" id="step1Indicator">1. Contact Info</div>
+            <div class="step" id="step2Indicator">2. Institute Details</div>
+            <div class="step" id="step3Indicator">3. Submit</div>
+        </div>
+
+        <div class="form-body">
+            <!-- STEP 1: Contact Info -->
+            <div class="form-step active" id="step1">
+                <div class="input-group">
+                    <label>Owner Name (मालिक का नाम)</label>
+                    <input type="text" id="ownerName" placeholder="Enter your full name">
+                </div>
+                <div class="input-group">
+                    <label>Mobile Number (मोबाइल नंबर)</label>
+                    <input type="tel" id="mobile" placeholder="Enter 10-digit mobile number" maxlength="10">
+                </div>
+                <div class="input-group">
+                    <label>Email ID (ईमेल आईडी)</label>
+                    <input type="email" id="email" placeholder="Enter your email address">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-next" onclick="nextStep(2)">Next Step →</button>
+                </div>
+                <div class="login-link">
+                    Already registered? <a href="#">Login Here</a>
+                </div>
+            </div>
+
+            <!-- STEP 2: Institute Details -->
+            <div class="form-step" id="step2">
+                <div class="input-group">
+                    <label>Coaching Institute Name (कोचिंग का नाम)</label>
+                    <input type="text" id="coachingName" placeholder="e.g., ABC Coaching Center">
+                </div>
+                <div class="input-group">
+                    <label>State (राज्य)</label>
+                    <select id="state">
+                        <option value="">Select State</option>
+                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                        <option value="Bihar">Bihar</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Madhya Pradesh">Madhya Pradesh</option>
+                        <option value="Rajasthan">Rajasthan</option>
+                        <!-- Baaki states baad mein add karenge -->
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>District (जिला)</label>
+                    <input type="text" id="district" placeholder="e.g., Lakhimpur Kheri">
+                </div>
+                <div class="input-group">
+                    <label>Full Address (पूरा पता)</label>
+                    <input type="text" id="address" placeholder="Enter full address">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-prev" onclick="nextStep(1)">← Back</button>
+                    <button class="btn btn-next" onclick="nextStep(3)">Next Step →</button>
+                </div>
+            </div>
+
+            <!-- STEP 3: Submit -->
+            <div class="form-step" id="step3">
+                <div style="background: #f0fdf4; border: 1px solid #22c55e; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <p style="font-size: 13px; color: #166534; font-weight: 500;">
+                        <i class="fa-solid fa-circle-info"></i> Please review your details and click Submit. After submission, you will receive your Login ID and Password on your email.
+                    </p>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-prev" onclick="nextStep(2)">← Back</button>
+                    <button class="btn btn-submit" onclick="submitForm()">Submit Registration</button>
+                </div>
+                <div id="loading" style="margin-top: 15px;">
+                    <i class="fa-solid fa-spinner fa-spin"></i> Registering... Please wait.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyArgULcCrtX6Cax4m0T7lXQuuTGc64d2AE",
+            authDomain: "taiyari-portal.firebaseapp.com",
+            projectId: "taiyari-portal",
+            storageBucket: "taiyari-portal.firebasestorage.app",
+            messagingSenderId: "130787040569",
+            appId: "1:130787040569:web:8b0a40aa8d836cadd7dce8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Step Navigation
+        window.nextStep = function(step) {
+            // Validation for Step 1
+            if(step === 2) {
+                const name = document.getElementById('ownerName').value;
+                const mobile = document.getElementById('mobile').value;
+                const email = document.getElementById('email').value;
+                if(!name || !mobile || !email) { alert("Please fill all fields in Step 1."); return; }
+                if(mobile.length !== 10) { alert("Please enter a valid 10-digit mobile number."); return; }
+            }
+
+            // Hide all steps
+            document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+
+            // Show selected step
+            document.getElementById('step' + step).classList.add('active');
+            document.getElementById('step' + step + 'Indicator').classList.add('active');
+        }
+
+        // Submit Form to Firebase
+        window.submitForm = async function() {
+            const btn = event.target;
+            btn.disabled = true;
+            document.getElementById('loading').style.display = 'block';
+
+            const coachingData = {
+                ownerName: document.getElementById('ownerName').value,
+                mobile: document.getElementById('mobile').value,
+                email: document.getElementById('email').value,
+                coachingName: document.getElementById('coachingName').value,
+                state: document.getElementById('state').value,
+                district: document.getElementById('district').value,
+                address: document.getElementById('address').value,
+                status: "pending", // Pending until payment is done
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                // Save to Firestore collection "coachings"
+                await addDoc(collection(db, "coachings"), coachingData);
+                
+                alert("Registration Successful! We will contact you soon for payment and login details.");
+                window.location.href = "index.html"; // Redirect to home
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                alert("Error: " + error.message);
+                btn.disabled = false;
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
