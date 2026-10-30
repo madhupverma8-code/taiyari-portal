@@ -1,0 +1,76 @@
+/* ==========================================
+   1. GLOBAL STYLES (सबके लिए)
+   ========================================== */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; user-select: none; }
+body { background-color: #f4f7f6; color: #333; overflow-x: hidden; }
+a { text-decoration: none; }
+.btn { padding: 10px 20px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 14px; }
+.btn-primary { background: #2563eb; color: white; }
+.btn-save { background: #10b981; color: white; }
+
+/* ==========================================
+   2. HOME PAGE (index.html)
+   ========================================== */
+.navbar { background: #ffffff; padding: 12px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon { background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: white; width: 40px; height: 40px; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 20px; }
+.logo-text { font-size: 22px; font-weight: 700; color: #1e3a8a; }
+.nav-links { display: flex; gap: 22px; align-items: center; }
+.nav-links a { color: #4b5563; font-weight: 500; font-size: 14px; }
+.btn-app { background: #10b981; color: white; padding: 8px 15px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
+.btn-student { background: #3b82f6; color: white; padding: 8px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
+.btn-coaching { background: #ff7b00; color: white; padding: 8px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
+
+.ticker-wrap { width: 100%; background-color: #1e3a8a; padding: 8px 0; overflow: hidden; }
+.ticker { display: inline-block; white-space: nowrap; animation: ticker 25s linear infinite; color: #fff; font-size: 14px; }
+.ticker span { margin-right: 50px; }
+@keyframes ticker { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
+
+.hero { position: relative; padding: 100px 5% 80px; display: flex; flex-direction: column; align-items: center; text-align: center; background: #0f172a; min-height: 60vh; }
+.hero-content h1 { font-size: 48px; color: white; margin-bottom: 20px; }
+.hero-content h1 span { color: #60a5fa; }
+.hero-content p { font-size: 18px; color: #cbd5e1; margin-bottom: 35px; }
+.hero-buttons { display: flex; gap: 20px; justify-content: center; }
+.btn-hero-student { background: #10b981; color: white; padding: 15px 35px; border-radius: 10px; font-size: 16px; border: none; cursor: pointer; }
+.btn-hero-coaching { background: #2563eb; color: white; padding: 15px 35px; border-radius: 10px; font-size: 16px; border: none; cursor: pointer; }
+
+/* ==========================================
+   3. DASHBOARDS (admin-panel.html & coaching-dashboard.html)
+   ========================================== */
+.dashboard-body { display: flex; min-height: 100vh; }
+.sidebar { width: 260px; background: #0f172a; color: white; display: flex; flex-direction: column; position: fixed; height: 100vh; transition: 0.3s; z-index: 1000; }
+.sidebar.closed { transform: translateX(-100%); }
+.brand { padding: 20px; font-size: 20px; font-weight: 700; color: #60a5fa; border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; }
+.menu-items { flex: 1; overflow-y: auto; padding-bottom: 20px; }
+.nav-item { padding: 12px 20px; display: flex; align-items: center; gap: 15px; color: #cbd5e1; font-size: 13px; cursor: pointer; }
+.nav-item:hover, .nav-item.active { background: #1e293b; color: #60a5fa; border-left: 4px solid #3b82f6; }
+.menu-category { padding: 15px 20px 5px; font-size: 10px; text-transform: uppercase; color: #64748b; font-weight: 700; }
+
+.main-content { flex: 1; margin-left: 260px; padding: 20px; transition: 0.3s; width: calc(100% - 260px); }
+.main-content.full-width { margin-left: 0; width: 100%; }
+.top-header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+.menu-toggle { font-size: 20px; cursor: pointer; color: #2563eb; background: #eff6ff; padding: 8px 12px; border-radius: 8px; }
+.admin-section { display: none; }
+.admin-section.active { display: block; }
+.card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+.card h3 { font-size: 16px; color: #1e3a8a; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
+
+/* ==========================================
+   4. TEST INTERFACE (test-interface.html)
+   ========================================== */
+.test-header { background: #0f172a; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+.timer-box { background: #1e293b; padding: 8px 20px; border-radius: 8px; font-size: 20px; font-weight: 700; color: #fbbf24; }
+.test-body { display: flex; height: calc(100vh - 60px); }
+.question-area { flex: 1; display: flex; flex-direction: column; background: white; margin: 15px; border-radius: 10px; }
+.q-content { flex: 1; padding: 25px; overflow-y: auto; }
+.palette-area { width: 300px; background: white; margin: 15px 15px 15px 0; border-radius: 10px; }
+.palette-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 15px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-left: 0; width: 100%; }
+    .test-body { flex-direction: column; }
+    .palette-area { width: auto; margin: 0 15px 15px 15px; }
+}
